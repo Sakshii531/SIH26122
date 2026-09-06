@@ -1,0 +1,19 @@
+INSERT INTO evidence (
+    evidence_id,
+    report_id,
+    evidence_type,
+    file_url
+)
+VALUES
+(
+    '66666666-6666-6666-6666-666666666661',
+    '55555555-5555-5555-5555-555555555555',
+    'Photo',
+    'https://example.com/evidence/excavation_photo.jpg'
+),
+(
+    '66666666-6666-6666-6666-666666666662',
+    '55555555-5555-5555-5555-555555555555',
+    'Document',
+    'https://example.com/evidence/site_report.pdf'
+);
