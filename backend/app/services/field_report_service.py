@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
 from datetime import datetime
 from typing import Dict, List, Optional, Set
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
 
+from app.core.config import get_settings
 from app.schemas.enums import FieldReportFormat
 from app.schemas.field_report import EvidenceItem, FieldReportCreate, FieldReportResponse
 
@@ -64,7 +66,13 @@ class FieldReportService:
         location: Optional[str] = None,
         user_format: Optional[FieldReportFormat] = None,
     ) -> FieldReportResponse:
-        """Validate file format, generate evidence item, and normalize file/audio field report."""
+        """Validate file format, generate evidence item, and normalize file/audio field report.
+
+        Security note: the filename is sanitised via os.path.basename() before
+        it is stored in the evidence item or used to construct the file URL.
+        This prevents path-traversal sequences (e.g. '../../etc/passwd') from
+        leaking into stored metadata.
+        """
         clean_reporter_id = (reporter_id or "").strip()
         if not clean_reporter_id:
             raise HTTPException(status_code=400, detail="Reporter ID is required.")
@@ -72,7 +80,17 @@ class FieldReportService:
         if not file_bytes:
             raise HTTPException(status_code=400, detail="Uploaded file is empty.")
 
-        ext = filename.lower().split(".")[-1] if "." in filename else ""
+        max_bytes = get_settings().MAX_UPLOAD_SIZE_MB * 1024 * 1024
+        if len(file_bytes) > max_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File size exceeds maximum allowed limit of {get_settings().MAX_UPLOAD_SIZE_MB}MB.",
+            )
+
+        # Sanitise filename: strip directory components and null bytes.
+        safe_filename = os.path.basename(filename.replace("\\", "/")).replace("\x00", "") or "upload.bin"
+
+        ext = safe_filename.lower().split(".")[-1] if "." in safe_filename else ""
         if ext not in cls.ALL_ALLOWED_EXTENSIONS:
             allowed_fmt_str = ", ".join(sorted(cls.ALL_ALLOWED_EXTENSIONS))
             raise HTTPException(
@@ -86,7 +104,7 @@ class FieldReportService:
         now = datetime.utcnow()
 
         # Attempt decoding text for plain text files
-        raw_content = f"[File Upload: {filename} ({len(file_bytes)} bytes)]"
+        raw_content = f"[File Upload: {safe_filename} ({len(file_bytes)} bytes)]"
         if ext == "txt":
             try:
                 decoded = file_bytes.decode("utf-8").strip()
@@ -97,8 +115,8 @@ class FieldReportService:
 
         evidence_item = EvidenceItem(
             id=uuid4(),
-            file_name=filename,
-            file_url=f"/storage/reports/{report_id}/{filename}",
+            file_name=safe_filename,
+            file_url=f"/storage/reports/{report_id}/{safe_filename}",
             mime_type=content_type or f"application/{ext}",
             description=f"Field report file ({detected_format.value})",
         )

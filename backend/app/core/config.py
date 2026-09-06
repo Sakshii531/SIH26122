@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     # ── API ───────────────────────────────────────────────────────────────────
     API_V1_PREFIX: str = "/api/v1"
 
+    # ── Upload Limits ─────────────────────────────────────────────────────────
+    MAX_UPLOAD_SIZE_MB: int = 50
+
     # ── CORS ──────────────────────────────────────────────────────────────────
     # Comma-separated list of allowed origins, e.g. "http://localhost:3000,https://example.com"
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
