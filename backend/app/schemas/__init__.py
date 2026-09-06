@@ -47,6 +47,10 @@ from app.schemas.schedule_activity import (
     ScheduleActivityResponse,
     ScheduleActivityUpdate,
 )
+from app.schemas.schedule_import import (
+    ScheduleImportSummaryResponse,
+    ScheduleRowValidationError,
+)
 
 __all__ = [
     # Enums
@@ -67,6 +71,9 @@ __all__ = [
     "ScheduleActivityCreate",
     "ScheduleActivityUpdate",
     "ScheduleActivityResponse",
+    # Schedule Import
+    "ScheduleRowValidationError",
+    "ScheduleImportSummaryResponse",
     # Field Report
     "EvidenceItem",
     "FieldReportBase",
@@ -89,3 +96,4 @@ __all__ = [
     "AuditEventCreate",
     "AuditEventResponse",
 ]
+
