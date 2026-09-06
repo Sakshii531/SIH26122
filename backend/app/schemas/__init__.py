@@ -62,6 +62,14 @@ from app.schemas.ai_contract import (
     FieldReportExtractionRequest,
     FieldReportExtractionResponse,
 )
+from app.schemas.dashboard import (
+    ActivityReportItem,
+    ActivityReportResponse,
+    DashboardSummaryResponse,
+    ProjectExecutionSummary,
+    RecentActivityItem,
+    RecentActivityResponse,
+)
 
 __all__ = [
     # Enums
@@ -120,6 +128,13 @@ __all__ = [
     "AuditEventBase",
     "AuditEventCreate",
     "AuditEventResponse",
+    # Dashboard
+    "DashboardSummaryResponse",
+    "ProjectExecutionSummary",
+    "ActivityReportItem",
+    "ActivityReportResponse",
+    "RecentActivityItem",
+    "RecentActivityResponse",
 ]
 
 
