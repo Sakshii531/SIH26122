@@ -30,6 +30,8 @@ from app.schemas.progress_event import (
     ProgressEventCreate,
     ProgressEventResponse,
 )
+from app.schemas.progress_request import ProgressFromReviewCreate
+
 from app.schemas.project import (
     ProjectBase,
     ProjectCreate,
@@ -112,6 +114,8 @@ __all__ = [
     "ProgressEventBase",
     "ProgressEventCreate",
     "ProgressEventResponse",
+    "ProgressFromReviewCreate",
+
     # Audit Event
     "AuditEventBase",
     "AuditEventCreate",
