@@ -36,15 +36,7 @@ async def health() -> dict:
 
 # ── API v1 router ─────────────────────────────────────────────────────────────
 
-from fastapi import APIRouter  # noqa: E402 — kept close to usage for clarity
+from app.api.router import api_router
 
-v1_router = APIRouter(prefix=settings.API_V1_PREFIX)
+app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
-
-@v1_router.get("/health", tags=["health"])
-async def health_v1() -> dict:
-    """Versioned liveness probe."""
-    return {"status": "ok", "version": settings.APP_VERSION}
-
-
-app.include_router(v1_router)
