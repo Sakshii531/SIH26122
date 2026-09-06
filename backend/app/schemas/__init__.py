@@ -52,6 +52,15 @@ from app.schemas.schedule_import import (
     ScheduleRowValidationError,
 )
 
+from app.schemas.ai_contract import (
+    ActivityMatchingRequest,
+    ActivityMatchingResponse,
+    AlternativeCandidateMatch,
+    CandidateActivity,
+    FieldReportExtractionRequest,
+    FieldReportExtractionResponse,
+)
+
 __all__ = [
     # Enums
     "ActivityLevel",
@@ -59,8 +68,13 @@ __all__ = [
     "FieldReportFormat",
     "MatchStatus",
     "ReviewDecision",
+    "ReviewStatus",
     "ProgressStatus",
     "AuditEventType",
+    # Review Workflow
+    "ReviewItemCreate",
+    "ReviewDecisionRequest",
+    "ReviewItemResponse",
     # Project
     "ProjectBase",
     "ProjectCreate",
@@ -79,6 +93,13 @@ __all__ = [
     "FieldReportBase",
     "FieldReportCreate",
     "FieldReportResponse",
+    # AI Contract
+    "FieldReportExtractionRequest",
+    "FieldReportExtractionResponse",
+    "CandidateActivity",
+    "ActivityMatchingRequest",
+    "AlternativeCandidateMatch",
+    "ActivityMatchingResponse",
     # Activity Match
     "ActivityMatchBase",
     "ActivityMatchCreate",
@@ -96,4 +117,5 @@ __all__ = [
     "AuditEventCreate",
     "AuditEventResponse",
 ]
+
 

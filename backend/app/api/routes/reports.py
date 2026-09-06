@@ -5,8 +5,15 @@ from uuid import UUID
 
 from fastapi import APIRouter, File, Form, UploadFile
 
+from app.schemas.ai_contract import (
+    ActivityMatchingRequest,
+    ActivityMatchingResponse,
+    FieldReportExtractionRequest,
+    FieldReportExtractionResponse,
+)
 from app.schemas.enums import FieldReportFormat
 from app.schemas.field_report import FieldReportCreate, FieldReportResponse
+from app.services.ai_integration_service import AIIntegrationService
 from app.services.field_report_service import FieldReportService
 
 router = APIRouter(prefix="/reports", tags=["reports"])
@@ -40,3 +47,21 @@ async def upload_field_report(
         location=location,
         user_format=source_format,
     )
+
+
+@router.post("/{report_id}/extraction", response_model=FieldReportExtractionResponse)
+async def extract_report(
+    report_id: UUID,
+    payload: FieldReportExtractionRequest,
+) -> FieldReportExtractionResponse:
+    """AI contract endpoint to trigger information & progress extraction from a field report."""
+    return AIIntegrationService.extract_report_data(report_id, payload)
+
+
+@router.post("/{report_id}/matching", response_model=ActivityMatchingResponse)
+async def match_report_activity(
+    report_id: UUID,
+    payload: ActivityMatchingRequest,
+) -> ActivityMatchingResponse:
+    """AI contract endpoint to match extracted report information to L5/L6 schedule activities."""
+    return AIIntegrationService.match_activity(report_id, payload)

@@ -45,8 +45,19 @@ class ReviewDecision(str, Enum):
 
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
+    MODIFIED = "MODIFIED"
     CORRECTED = "CORRECTED"
     OVERRIDDEN = "OVERRIDDEN"
+
+
+class ReviewStatus(str, Enum):
+    """Status of a human review item."""
+
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    MODIFIED = "MODIFIED"
+
 
 
 class ProgressStatus(str, Enum):
