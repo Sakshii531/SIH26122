@@ -33,10 +33,16 @@ class FieldReportBase(BaseModel):
     evidence: List[EvidenceItem] = Field(default_factory=list, description="Attached evidence items")
 
 
-class FieldReportCreate(FieldReportBase):
+class FieldReportCreate(BaseModel):
     """Schema for submitting a new Field Report."""
 
-    pass
+    project_id: Optional[UUID] = Field(None, description="Optional associated project UUID")
+    source_format: FieldReportFormat = Field(default=FieldReportFormat.TEXT, description="Format of reported data")
+    reporter_id: str = Field(..., description="ID / Name of field supervisor or reporter")
+    raw_content: str = Field(..., description="Raw text, transcript, or parsed content")
+    discipline: Optional[str] = Field(None, description="Engineering discipline mentioned in report")
+    location: Optional[str] = Field(None, description="Site location or section mentioned")
+    evidence: List[EvidenceItem] = Field(default_factory=list, description="Attached evidence items")
 
 
 class FieldReportResponse(FieldReportBase):
