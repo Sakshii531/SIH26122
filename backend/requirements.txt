@@ -1,0 +1,9 @@
+# ── Web framework ─────────────────────────────────────────────────────────────
+fastapi==0.111.1
+uvicorn==0.30.1
+
+# ── Settings / env management ─────────────────────────────────────────────────
+pydantic-settings==2.3.4
+
+# ── HTTP client (for outbound calls, e.g. AI services) ───────────────────────
+httpx==0.27.0
