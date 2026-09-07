@@ -343,7 +343,7 @@ class TestProjectSummary:
         assert data["project_id"] == project_id
         assert data["total_progress_events"] == 0
         assert data["average_progress_percentage"] is None
-        assert data["total_audit_events"] == 0
+        assert data["total_audit_logs"] == 0
 
     def test_invalid_project_uuid_returns_422(self):
         """A non-UUID project_id is rejected with 422."""
@@ -372,7 +372,7 @@ class TestProjectSummary:
         # avg of 40.0 and 60.0
         assert data["average_progress_percentage"] == pytest.approx(50.0, abs=0.1)
         # Each progress event auto-creates one audit event
-        assert data["total_audit_events"] == 2
+        assert data["total_audit_logs"] == 2
 
     def test_project_isolation(self):
         """Events from project A do not appear in project B's summary.
@@ -388,7 +388,7 @@ class TestProjectSummary:
         res = client.get(f"/api/v1/dashboard/projects/{pid_b}")
         data = res.json()
         assert data["total_progress_events"] == 0
-        assert data["total_audit_events"] == 0
+        assert data["total_audit_logs"] == 0
 
     def test_response_shape(self):
         """Project summary contains required keys."""
@@ -396,7 +396,7 @@ class TestProjectSummary:
         res = client.get(f"/api/v1/dashboard/projects/{pid}")
         assert res.status_code == 200
         data = res.json()
-        for key in ["project_id", "total_progress_events", "average_progress_percentage", "total_audit_events"]:
+        for key in ["project_id", "total_progress_events", "average_progress_percentage", "total_audit_logs"]:
             assert key in data, f"Missing key: {key}"
 
     def test_no_hardcoded_project_values(self):
@@ -404,7 +404,7 @@ class TestProjectSummary:
         pid = str(uuid4())
         data = client.get(f"/api/v1/dashboard/projects/{pid}").json()
         assert data["total_progress_events"] == 0, "Hardcoded progress event count detected"
-        assert data["total_audit_events"] == 0, "Hardcoded audit event count detected"
+        assert data["total_audit_logs"] == 0, "Hardcoded audit log count detected"
         assert data["average_progress_percentage"] is None, "Hardcoded avg_pct detected"
 
 

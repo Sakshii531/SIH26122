@@ -76,9 +76,9 @@ class ProgressWorkflowService:
 
         progress_event = ProgressEventResponse(
             id=progress_id,
+            activity_id=target_activity_id,
             project_id=project_id,
-            schedule_activity_id=target_activity_id,
-            field_report_id=review.report_id,
+            report_id=review.report_id,
             review_id=review.id,
             status=payload.status,
             actual_start_date=payload.actual_start_date,
@@ -87,6 +87,7 @@ class ProgressWorkflowService:
             quantity_completed=payload.quantity_completed,
             unit_of_measure=payload.unit_of_measure,
             remarks=payload.remarks or review.comments,
+            validated_by=review.reviewer_id or getattr(payload, "validated_by", None),
             timestamp=now,
             created_at=now,
         )

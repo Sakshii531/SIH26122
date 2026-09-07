@@ -13,6 +13,7 @@ from app.schemas.dashboard import (
 )
 from app.schemas.enums import ActivityLevel, ProgressStatus, ReviewStatus
 from app.services.audit_service import AuditService
+from app.services.conflict_service import ConflictService
 from app.services.progress_workflow_service import ProgressWorkflowService
 from app.services.review_workflow_service import ReviewWorkflowService
 
@@ -26,6 +27,7 @@ class DashboardService:
       - ReviewWorkflowService._reviews_db
       - ProgressWorkflowService._progress_db  / _review_progress_map
       - AuditService._audit_db
+      - ConflictService._conflicts_db
 
     No independent data store is created here.  No hardcoded / mock values.
     Empty datasets always return valid zero / empty responses.
@@ -35,12 +37,7 @@ class DashboardService:
 
     @classmethod
     def get_summary(cls) -> DashboardSummaryResponse:
-        """Aggregate project-wide execution metrics from all in-memory stores.
-
-        Reads:
-          • ReviewWorkflowService  → review counts & average confidence
-          • ProgressWorkflowService → total events & activity-level counts
-        """
+        """Aggregate project-wide execution metrics from all in-memory stores."""
 
         # ── Review counts ─────────────────────────────────────────────────────
         all_reviews = ReviewWorkflowService.list_reviews()
@@ -80,13 +77,14 @@ class DashboardService:
             for pe in latest_per_activity.values()
             if 0.0 < pe.progress_percentage < 100.0  # type: ignore[union-attr]
         )
-        # "Delayed" = the latest progress event for that activity has status PAUSED
-        # Use enum comparison (ProgressStatus is a str-enum so == works directly).
         delayed = sum(
             1
             for pe in latest_per_activity.values()
             if pe.status == ProgressStatus.PAUSED  # type: ignore[union-attr]
         )
+
+        all_conflicts = ConflictService.list_conflicts()
+        all_audits = AuditService.list_audit_events()
 
         return DashboardSummaryResponse(
             total_activities=total_activities,
@@ -98,8 +96,12 @@ class DashboardService:
             rejected_reviews=rejected,
             modified_reviews=modified,
             total_progress_events=len(all_progress),
+            total_actual_progress=len(all_progress),
             average_match_confidence=avg_confidence,
+            total_conflicts=len(all_conflicts),
+            total_audit_logs=len(all_audits),
         )
+
 
     # ── 2. Project-level summary ──────────────────────────────────────────────
 
@@ -129,12 +131,21 @@ class DashboardService:
             if a.project_id == project_id
         ]
 
+        project_conflicts = [
+            c
+            for c in ConflictService.list_conflicts()
+            if c.event_id is not None  # all conflicts are in-scope (no project_id on Conflict)
+        ]
+
         return ProjectExecutionSummary(
             project_id=project_id,
             total_progress_events=len(project_events),
+            total_actual_progress=len(project_events),
             average_progress_percentage=avg_pct,
-            total_audit_events=len(project_audit_events),
+            total_audit_logs=len(project_audit_events),
+            total_conflicts=len(project_conflicts),
         )
+
 
     # ── 3. Activity reporting list ────────────────────────────────────────────
 

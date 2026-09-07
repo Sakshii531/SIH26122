@@ -18,6 +18,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.audit_service import AuditService
+from app.services.conflict_service import ConflictService
 from app.services.progress_workflow_service import ProgressWorkflowService
 from app.services.review_workflow_service import ReviewWorkflowService
 
@@ -34,10 +35,12 @@ def reset_stores():
     ReviewWorkflowService.clear_db()
     ProgressWorkflowService.clear_db()
     AuditService.clear_db()
+    ConflictService.clear_db()
     yield
     ReviewWorkflowService.clear_db()
     ProgressWorkflowService.clear_db()
     AuditService.clear_db()
+    ConflictService.clear_db()
 
 
 @pytest.fixture(scope="session")

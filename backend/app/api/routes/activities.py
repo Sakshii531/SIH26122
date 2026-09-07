@@ -1,5 +1,19 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from typing import List, Optional
+from uuid import UUID
+
+from fastapi import APIRouter, Query
+from app.schemas.activity import ActivityResponse
 
 router = APIRouter(prefix="/activities", tags=["activities"])
+
+
+@router.get("", response_model=List[ActivityResponse])
+async def list_activities(
+    project_id: Optional[UUID] = Query(None, description="Optional project UUID filter"),
+    schedule_id: Optional[UUID] = Query(None, description="Optional schedule UUID filter"),
+    wbs_id: Optional[UUID] = Query(None, description="Optional WBS node UUID filter"),
+) -> List[ActivityResponse]:
+    """List schedule activities."""
+    return []

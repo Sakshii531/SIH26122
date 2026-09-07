@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class ProjectBase(BaseModel):
@@ -35,7 +35,15 @@ class ProjectResponse(ProjectBase):
     """Schema for Project responses."""
 
     id: UUID = Field(default_factory=uuid4, description="Unique project UUID")
+    schedules: Optional[List[dict]] = Field(None, description="Associated project schedules")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+    @computed_field
+    @property
+    def project_id(self) -> UUID:
+        """ER diagram terminology alias for project ID."""
+        return self.id
+
     model_config = ConfigDict(from_attributes=True)
+

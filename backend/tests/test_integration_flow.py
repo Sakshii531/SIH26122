@@ -255,7 +255,7 @@ class TestFullWorkflow:
         # ── Step 9: Verify project-level dashboard ────────────────────────────
         proj_summary = client.get(f"/api/v1/dashboard/projects/{project_id}").json()
         assert proj_summary["total_progress_events"] == 1
-        assert proj_summary["total_audit_events"] == 1
+        assert proj_summary["total_audit_logs"] == 1
         assert proj_summary["average_progress_percentage"] == pytest.approx(
             extraction["extracted_progress_percentage"], abs=0.01
         )
@@ -374,7 +374,7 @@ class TestFullWorkflow:
 
         # Project audit total = 3
         proj_summary = client.get(f"/api/v1/dashboard/projects/{project_id}").json()
-        assert proj_summary["total_audit_events"] == 3
+        assert proj_summary["total_audit_logs"] == 3
 
     def test_dashboard_reflects_live_workflow_state(self):
         """
@@ -417,7 +417,7 @@ class TestFullWorkflow:
         # Per-project checks
         a_summary = client.get(f"/api/v1/dashboard/projects/{pid_a}").json()
         assert a_summary["total_progress_events"] == 2
-        assert a_summary["total_audit_events"] == 2
+        assert a_summary["total_audit_logs"] == 2
 
         b_summary = client.get(f"/api/v1/dashboard/projects/{pid_b}").json()
         assert b_summary["total_progress_events"] == 1
@@ -457,7 +457,7 @@ class TestFullWorkflow:
 
         proj = client.get(f"/api/v1/dashboard/projects/{project_id}").json()
         assert proj["total_progress_events"] == 2
-        assert proj["total_audit_events"] == 2
+        assert proj["total_audit_logs"] == 2
 
     def test_review_get_by_id_after_decision(self):
         """

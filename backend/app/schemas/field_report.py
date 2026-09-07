@@ -4,21 +4,10 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 from app.schemas.enums import FieldReportFormat
-
-
-class EvidenceItem(BaseModel):
-    """Supporting evidence item (photo, document, voice recording)."""
-
-    id: UUID = Field(default_factory=uuid4, description="Evidence item UUID")
-    file_name: str = Field(..., description="Uploaded file name")
-    file_url: str = Field(..., description="Storage URL / path")
-    mime_type: Optional[str] = Field(None, description="MIME content type")
-    description: Optional[str] = Field(None, description="Evidence notes or context")
-
-    model_config = ConfigDict(from_attributes=True)
+from app.schemas.evidence import EvidenceItem, EvidenceResponse
 
 
 class FieldReportBase(BaseModel):
@@ -49,6 +38,14 @@ class FieldReportResponse(FieldReportBase):
     """Schema for Field Report responses."""
 
     id: UUID = Field(default_factory=uuid4, description="Unique field report UUID")
+    extracted_events: Optional[List[dict]] = Field(None, description="Associated extracted progress events")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+    @computed_field
+    @property
+    def report_id(self) -> UUID:
+        """ER diagram primary key alias: report_id → id."""
+        return self.id
+
     model_config = ConfigDict(from_attributes=True)
+

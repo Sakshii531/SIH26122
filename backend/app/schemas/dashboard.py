@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 from app.schemas.enums import ActivityLevel, ActivityStatus, AuditEventType, ReviewStatus
 
@@ -23,25 +23,30 @@ class ReviewSummary(BaseModel):
 
 
 class DashboardSummaryResponse(BaseModel):
-    """Aggregated project-wide execution metrics."""
+    """Aggregated project-wide execution metrics incorporating ER concepts."""
 
-    # ── Activity / Schedule counts ────────────────────────────────────────────
+    # ── Activity / Schedule counts (ER: activities) ─────────────────────────
     total_activities: int = Field(0, description="Total schedule activities imported")
     completed_activities: int = Field(0, description="Activities with COMPLETED status")
     in_progress_activities: int = Field(0, description="Activities currently IN_PROGRESS")
     delayed_activities: int = Field(0, description="Activities marked DELAYED")
 
-    # ── Review queue ──────────────────────────────────────────────────────────
+    # ── Review queue (ER: planner_reviews) ──────────────────────────────────
     pending_reviews: int = Field(0, description="Review items awaiting a decision")
     approved_reviews: int = Field(0, description="APPROVED review items")
     rejected_reviews: int = Field(0, description="REJECTED review items")
     modified_reviews: int = Field(0, description="MODIFIED review items")
 
-    # ── Progress events ───────────────────────────────────────────────────────
+    # ── Progress events & Actual Progress (ER: actual_progress) ─────────────
     total_progress_events: int = Field(0, description="Total validated progress events recorded")
+    total_actual_progress: int = Field(0, description="Total actual progress records (ER concept)")
     average_match_confidence: Optional[float] = Field(
         None, ge=0.0, le=1.0, description="Mean AI confidence score across all review items (null when no reviews)"
     )
+
+    # ── Conflicts & Audit Logs (ER: conflicts, audit_logs) ──────────────────
+    total_conflicts: int = Field(0, description="Total detected conflicts (ER concept)")
+    total_audit_logs: int = Field(0, description="Total audit log entries recorded (ER concept)")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -50,14 +55,16 @@ class DashboardSummaryResponse(BaseModel):
 
 
 class ProjectExecutionSummary(BaseModel):
-    """Per-project execution KPIs derived from progress events and reviews."""
+    """Per-project execution KPIs derived from progress events, reviews, conflicts, and audit logs."""
 
     project_id: UUID = Field(..., description="Project UUID")
     total_progress_events: int = Field(0, description="Total progress events for this project")
+    total_actual_progress: int = Field(0, description="Total actual progress records for this project")
     average_progress_percentage: Optional[float] = Field(
         None, ge=0.0, le=100.0, description="Mean progress percentage across events (null when no events)"
     )
-    total_audit_events: int = Field(0, description="Total audit entries for this project")
+    total_audit_logs: int = Field(0, description="Total audit log entries for this project (ER: audit_logs)")
+    total_conflicts: int = Field(0, description="Total conflicts for this project (ER: conflicts)")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -70,6 +77,7 @@ class ActivityReportItem(BaseModel):
 
     schedule_activity_id: UUID = Field(..., description="Schedule activity UUID")
     project_id: UUID = Field(..., description="Project UUID")
+    wbs_id: Optional[UUID] = Field(None, description="Associated WBS node UUID (if available)")
 
     # Latest confirmed progress values (from newest progress event)
     latest_progress_percentage: float = Field(0.0, ge=0.0, le=100.0, description="Most recent validated completion %")
@@ -82,7 +90,14 @@ class ActivityReportItem(BaseModel):
 
     last_updated: datetime = Field(..., description="Timestamp of the most recent progress event")
 
+    @computed_field
+    @property
+    def activity_id(self) -> UUID:
+        """ER diagram terminology alias for activity ID."""
+        return self.schedule_activity_id
+
     model_config = ConfigDict(from_attributes=True)
+
 
 
 class ActivityReportResponse(BaseModel):

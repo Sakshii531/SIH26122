@@ -685,7 +685,7 @@ class TestDashboardErrors:
         assert res.status_code == 200
         data = res.json()
         assert data["total_progress_events"] == 0
-        assert data["total_audit_events"] == 0
+        assert data["total_audit_logs"] == 0
         assert data["average_progress_percentage"] is None
 
     def test_activities_invalid_project_id_uuid_returns_422(self):
