@@ -6,14 +6,65 @@
   html {
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     letter-spacing: -0.011em;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-[#F8FAFC] text-slate-900 font-sans antialiased;
   }
+
+  /* Better default table cell padding consistency */
+  th,
+  td {
+    vertical-align: middle;
+  }
 }
 
-/* Custom subtle scrollbar for enterprise tables and panels */
+@layer components {
+  /* Standard filter select used across all pages */
+  .filter-select {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 
+           focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none
+           hover:border-slate-400 transition-colors cursor-pointer;
+    height: 2rem; /* h-8, same as Button sm */
+  }
+
+  /* Table card wrapper */
+  .data-table-card {
+    @apply bg-white border border-slate-200/90 rounded-xl shadow-subtle overflow-hidden;
+  }
+
+  /* Table header row */
+  .data-table-thead {
+    @apply bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px];
+  }
+
+  /* Section card */
+  .section-card {
+    @apply bg-white border border-slate-200/90 rounded-xl shadow-subtle;
+  }
+
+  /* KPI card */
+  .kpi-card {
+    @apply p-4 bg-white border border-slate-200/90 rounded-xl shadow-subtle flex flex-col justify-between;
+  }
+
+  /* Page header */
+  .page-header {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-3;
+  }
+
+  /* Toast notification */
+  .toast-success {
+    @apply p-3.5 rounded-lg flex items-center justify-between border bg-emerald-50 text-emerald-900 border-emerald-200;
+  }
+
+  .toast-error {
+    @apply p-3.5 rounded-lg flex items-center justify-between border bg-rose-50 text-rose-900 border-rose-200;
+  }
+}
+
+/* Subtle enterprise scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -32,8 +83,64 @@
   background: #94a3b8;
 }
 
-/* Accessible focus ring */
+/* Accessible focus ring consistent across the application */
 *:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove outline for mouse users (handled by Tailwind focus-visible) */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Sidebar slide-in for mobile drawer */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.2s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.2s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.15s ease-out;
+}
+
+/* Progress bar transition */
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+/* Row highlight on table hover */
+.table-row-hover:hover {
+  background-color: rgba(248, 250, 252, 0.8);
 }

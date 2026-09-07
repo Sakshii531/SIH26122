@@ -37,15 +37,15 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles = {
       primary:
-        'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 active:bg-slate-950 focus-visible:ring-slate-900 shadow-sm',
+        'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 active:bg-blue-800 focus-visible:ring-blue-600 shadow-xs',
       secondary:
-        'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 focus-visible:ring-slate-400 shadow-sm',
+        'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 focus-visible:ring-slate-400 shadow-xs',
       outline:
         'bg-transparent text-slate-700 border-slate-300 hover:bg-slate-50 hover:border-slate-400 focus-visible:ring-slate-400',
       danger:
-        'bg-rose-600 text-white border-rose-600 hover:bg-rose-700 active:bg-rose-800 focus-visible:ring-rose-500 shadow-sm',
+        'bg-rose-600 text-white border-rose-600 hover:bg-rose-700 active:bg-rose-800 focus-visible:ring-rose-500 shadow-xs',
       success:
-        'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 focus-visible:ring-emerald-500 shadow-sm',
+        'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 focus-visible:ring-emerald-500 shadow-xs',
       ghost:
         'bg-transparent text-slate-600 border-transparent hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400',
     }

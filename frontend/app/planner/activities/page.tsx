@@ -100,7 +100,7 @@ export default function ActivitiesPage() {
             <select
               value={selectedDiscipline}
               onChange={(e) => setSelectedDiscipline(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:border-blue-600 focus:outline-none"
+              className="filter-select"
             >
               <option value="All">All Disciplines</option>
               <option value="Piping">Piping</option>
@@ -117,7 +117,7 @@ export default function ActivitiesPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:border-blue-600 focus:outline-none"
+              className="filter-select"
             >
               <option value="All">All Statuses</option>
               <option value="In Progress">In Progress</option>

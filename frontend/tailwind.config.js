@@ -27,8 +27,32 @@ module.exports = {
         },
       },
       boxShadow: {
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.04)',
         'card': '0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04)',
+        'panel': '0 4px 16px 0 rgba(15, 23, 42, 0.08)',
+      },
+      borderRadius: {
+        'xs': '2px',
+      },
+      animation: {
+        'slide-in-left': 'slideInLeft 0.2s ease-out',
+        'slide-in-right': 'slideInRight 0.2s ease-out',
+        'fade-in': 'fadeIn 0.15s ease-out',
+      },
+      keyframes: {
+        slideInLeft: {
+          from: { transform: 'translateX(-100%)' },
+          to: { transform: 'translateX(0)' },
+        },
+        slideInRight: {
+          from: { transform: 'translateX(100%)' },
+          to: { transform: 'translateX(0)' },
+        },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
       },
     },
   },

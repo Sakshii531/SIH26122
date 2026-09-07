@@ -162,11 +162,11 @@ export default function ProgressPage() {
           </div>
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-xs bg-slate-300" />
+              <span className="w-3 h-3 rounded-sm bg-slate-300 inline-block" />
               <span className="text-slate-600 text-[11px]">Planned Baseline</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-xs bg-blue-600" />
+              <span className="w-3 h-3 rounded-sm bg-blue-600 inline-block" />
               <span className="text-slate-900 font-semibold text-[11px]">Actual Execution</span>
             </div>
           </div>

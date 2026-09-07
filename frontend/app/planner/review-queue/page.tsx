@@ -253,7 +253,7 @@ export default function ReviewQueuePage() {
       {/* Filter and Search Bar */}
       <div className="p-4 bg-white border border-slate-200/90 rounded-xl shadow-subtle space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* Search */}
+          {/* Search - spans 2 cols */}
           <div className="sm:col-span-2">
             <Input
               placeholder="Search DPRs, activity codes, descriptions, supervisors..."
@@ -263,12 +263,29 @@ export default function ReviewQueuePage() {
             />
           </div>
 
+          {/* Status Filter */}
+          <div>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="filter-select"
+              aria-label="Filter by status"
+            >
+              <option value="All">All Statuses</option>
+              <option value="Needs Review">Needs Review</option>
+              <option value="Approved">Approved</option>
+              <option value="Corrected">Corrected</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+
           {/* Discipline Filter */}
           <div>
             <select
               value={selectedDiscipline}
               onChange={(e) => setSelectedDiscipline(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:border-blue-600 focus:outline-none"
+              className="filter-select"
+              aria-label="Filter by discipline"
             >
               <option value="All">All Disciplines</option>
               <option value="Piping">Piping</option>
@@ -279,20 +296,36 @@ export default function ReviewQueuePage() {
               <option value="Structural">Structural</option>
             </select>
           </div>
+        </div>
 
-          {/* Confidence Filter */}
-          <div>
-            <select
-              value={selectedConfidence}
-              onChange={(e) => setSelectedConfidence(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:border-blue-600 focus:outline-none"
+        {/* Second filter row: Confidence */}
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Confidence:</span>
+          <select
+            value={selectedConfidence}
+            onChange={(e) => setSelectedConfidence(e.target.value)}
+            className="filter-select w-auto min-w-[180px]"
+            aria-label="Filter by confidence"
+          >
+            <option value="All">All Confidence Levels</option>
+            <option value="High">High (≥ 70%)</option>
+            <option value="Medium">Medium (50–69%)</option>
+            <option value="Low">Low (&lt; 50%)</option>
+          </select>
+          {(searchQuery || selectedStatus !== 'All' || selectedDiscipline !== 'All' || selectedConfidence !== 'All') && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('')
+                setSelectedStatus('All')
+                setSelectedDiscipline('All')
+                setSelectedConfidence('All')
+              }}
+              className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
             >
-              <option value="All">All Confidence Scores</option>
-              <option value="High">High Confidence (≥ 70%)</option>
-              <option value="Medium">Medium Confidence (50–69%)</option>
-              <option value="Low">Low Confidence (&lt; 50%)</option>
-            </select>
-          </div>
+              Clear filters
+            </button>
+          )}
         </div>
       </div>
 
