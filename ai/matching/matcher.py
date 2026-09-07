@@ -15,6 +15,7 @@ from ai.data.schedule_context import ActivityContext, ScheduleContextBuilder
 from ai.data.schedule_loader import ScheduleDataset
 from ai.extraction.schemas import ExtractedProgressEvent
 from ai.matching.candidate_retriever import CandidateRetriever, RetrievedCandidate
+from ai.matching.semantic_similarity import SemanticSimilarityCalculator
 
 
 class MatchStatus(str, Enum):
@@ -181,13 +182,15 @@ class ActivityMatcher:
         reasons = list(candidate.retrieval_reasons)
         score = candidate.retrieval_score
 
-        # Text similarity bonus between extracted activity_description and candidate name
+        # Semantic similarity bonus between extracted activity_description and candidate name
         if event.activity_description and candidate.name:
-            sim = cls._calculate_text_similarity(event.activity_description, candidate.name)
-            if sim > 0.4:
-                bonus = min(0.20, sim * 0.20)
+            sem_sim = SemanticSimilarityCalculator.calculate_similarity(
+                event.activity_description, candidate.name
+            )
+            if sem_sim > 0.30:
+                bonus = min(0.20, sem_sim * 0.20)
                 score += bonus
-                reasons.append(f"name_similarity_bonus:{sim:.2f}")
+                reasons.append(f"semantic_similarity:{sem_sim:.2f}")
 
         # WBS / Location match bonus
         if event.location and ctx and ctx.wbs_path_str:
