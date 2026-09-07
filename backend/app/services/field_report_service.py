@@ -8,12 +8,14 @@ from uuid import UUID, uuid4
 from fastapi import HTTPException
 
 from app.core.config import get_settings
+from app.repositories.factory import get_evidence_repository, get_field_report_repository
 from app.schemas.enums import FieldReportFormat
+from app.schemas.evidence import EvidenceCreate
 from app.schemas.field_report import EvidenceItem, FieldReportCreate, FieldReportResponse
 
 
 class FieldReportService:
-    """Service handling field progress report ingestion and normalization."""
+    """Service handling field progress report ingestion and normalization via repository layer."""
 
     ALLOWED_EXTENSIONS: Dict[FieldReportFormat, Set[str]] = {
         FieldReportFormat.DPR: {"pdf", "doc", "docx"},
@@ -42,7 +44,7 @@ class FieldReportService:
         report_id = uuid4()
         now = datetime.utcnow()
 
-        return FieldReportResponse(
+        response = FieldReportResponse(
             id=report_id,
             project_id=project_id,
             source_format=payload.source_format or FieldReportFormat.TEXT,
@@ -53,6 +55,10 @@ class FieldReportService:
             evidence=payload.evidence or [],
             created_at=now,
         )
+
+        repo = get_field_report_repository()
+        repo.save_item(response)
+        return response
 
     @classmethod
     def process_file_report(
@@ -66,13 +72,7 @@ class FieldReportService:
         location: Optional[str] = None,
         user_format: Optional[FieldReportFormat] = None,
     ) -> FieldReportResponse:
-        """Validate file format, generate evidence item, and normalize file/audio field report.
-
-        Security note: the filename is sanitised via os.path.basename() before
-        it is stored in the evidence item or used to construct the file URL.
-        This prevents path-traversal sequences (e.g. '../../etc/passwd') from
-        leaking into stored metadata.
-        """
+        """Validate file format, generate evidence item, and normalize file/audio field report."""
         clean_reporter_id = (reporter_id or "").strip()
         if not clean_reporter_id:
             raise HTTPException(status_code=400, detail="Reporter ID is required.")
@@ -113,15 +113,19 @@ class FieldReportService:
             except Exception:
                 pass
 
+        ev_id = uuid4()
+        file_url = f"/storage/reports/{report_id}/{safe_filename}"
+        mime = content_type or f"application/{ext}"
+
         evidence_item = EvidenceItem(
-            id=uuid4(),
+            id=ev_id,
             file_name=safe_filename,
-            file_url=f"/storage/reports/{report_id}/{safe_filename}",
-            mime_type=content_type or f"application/{ext}",
+            file_url=file_url,
+            mime_type=mime,
             description=f"Field report file ({detected_format.value})",
         )
 
-        return FieldReportResponse(
+        response = FieldReportResponse(
             id=report_id,
             project_id=target_project_id,
             source_format=detected_format,
@@ -132,6 +136,22 @@ class FieldReportService:
             evidence=[evidence_item],
             created_at=now,
         )
+
+        repo = get_field_report_repository()
+        repo.save_item(response)
+
+        ev_repo = get_evidence_repository()
+        ev_repo.create(
+            EvidenceCreate(
+                report_id=report_id,
+                file_name=safe_filename,
+                file_url=file_url,
+                mime_type=mime,
+                description=f"Field report file ({detected_format.value})",
+            )
+        )
+
+        return response
 
     @classmethod
     def _detect_format_from_extension(cls, ext: str) -> FieldReportFormat:

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict, List, Optional
-from uuid import UUID, uuid4
+from typing import List, Optional
+from uuid import UUID
 
 from fastapi import HTTPException
 
+from app.repositories.factory import get_planner_review_repository
 from app.schemas.enums import ReviewDecision, ReviewStatus
 from app.schemas.review_workflow import (
     ReviewDecisionRequest,
@@ -15,45 +16,25 @@ from app.schemas.review_workflow import (
 
 
 class ReviewWorkflowService:
-    """In-memory service managing the Human Review & Confidence Workflow."""
-
-    # In-memory store for development/testing
-    _reviews_db: Dict[UUID, ReviewItemResponse] = {}
+    """Service managing the Human Review & Confidence Workflow via repository layer."""
 
     @classmethod
     def create_review_item(cls, payload: ReviewItemCreate) -> ReviewItemResponse:
         """Create a new human review item for an AI extraction/match result (initial status PENDING)."""
-        review_id = uuid4()
-        now = datetime.utcnow()
-
-        item = ReviewItemResponse(
-            id=review_id,
-            report_id=payload.report_id,
-            schedule_activity_id=payload.schedule_activity_id,
-            matched_activity_code=payload.matched_activity_code,
-            confidence_score=payload.confidence_score,
-            status=ReviewStatus.PENDING,
-            extracted_progress_percentage=payload.extracted_progress_percentage,
-            extracted_status=payload.extracted_status,
-            discipline=payload.discipline,
-            location=payload.location,
-            evidence=payload.evidence,
-            metadata=payload.metadata,
-            created_at=now,
-        )
-
-        cls._reviews_db[review_id] = item
-        return item
+        repo = get_planner_review_repository()
+        return repo.create(payload)
 
     @classmethod
     def get_review_item(cls, review_id: UUID) -> ReviewItemResponse:
         """Retrieve a review item by its UUID."""
-        if review_id not in cls._reviews_db:
+        repo = get_planner_review_repository()
+        item = repo.get_by_id(review_id)
+        if not item:
             raise HTTPException(
                 status_code=404,
                 detail=f"Review item '{review_id}' not found.",
             )
-        return cls._reviews_db[review_id]
+        return item
 
     @classmethod
     def submit_decision(cls, review_id: UUID, payload: ReviewDecisionRequest) -> ReviewItemResponse:
@@ -99,18 +80,17 @@ class ReviewWorkflowService:
             }
         )
 
-        cls._reviews_db[review_id] = updated_review
-        return updated_review
+        repo = get_planner_review_repository()
+        return repo.update(review_id, updated_review)
 
     @classmethod
     def list_reviews(cls, status: Optional[ReviewStatus] = None) -> List[ReviewItemResponse]:
         """List review items with optional status filtering."""
-        items = list(cls._reviews_db.values())
-        if status is not None:
-            items = [item for item in items if item.status == status]
-        return items
+        repo = get_planner_review_repository()
+        return repo.list_all(status=status)
 
     @classmethod
     def clear_db(cls) -> None:
-        """Reset in-memory database for testing isolation."""
-        cls._reviews_db.clear()
+        """Reset repository store for testing isolation."""
+        repo = get_planner_review_repository()
+        repo.clear()

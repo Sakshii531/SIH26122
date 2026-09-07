@@ -20,6 +20,13 @@ class Settings(BaseSettings):
     # ── Upload Limits ─────────────────────────────────────────────────────────
     MAX_UPLOAD_SIZE_MB: int = 50
 
+    # ── Database & Supabase (Step 16 Readiness) ──────────────────────────────
+    DB_PROVIDER: str = "in_memory"
+    SUPABASE_URL: str | None = None
+    SUPABASE_KEY: str | None = None
+    SUPABASE_SERVICE_ROLE_KEY: str | None = None
+    DATABASE_URL: str | None = None
+
     # ── CORS ──────────────────────────────────────────────────────────────────
     # Comma-separated list of allowed origins, e.g. "http://localhost:3000,https://example.com"
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]

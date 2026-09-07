@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
 
+from app.repositories.factory import get_actual_progress_repository
 from app.schemas.audit_event import AuditEventCreate
 from app.schemas.enums import AuditEventType, ReviewStatus
 from app.schemas.progress_event import ProgressEventResponse
@@ -15,10 +16,7 @@ from app.services.review_workflow_service import ReviewWorkflowService
 
 
 class ProgressWorkflowService:
-    """Service managing validated actual progress events and audit trail triggers."""
-
-    _progress_db: Dict[UUID, ProgressEventResponse] = {}
-    _review_progress_map: Dict[UUID, UUID] = {}
+    """Service managing validated actual progress events and audit trail triggers via repository layer."""
 
     @classmethod
     def create_progress_from_review(cls, payload: ProgressFromReviewCreate) -> ProgressEventResponse:
@@ -32,12 +30,12 @@ class ProgressWorkflowService:
                 detail=f"Cannot create progress event for review with status '{review.status.value}'. Only APPROVED or MODIFIED reviews are allowed.",
             )
 
-        # 2. Block duplicate progress creation from same review
-        if payload.review_id in cls._review_progress_map:
-            existing_id = cls._review_progress_map[payload.review_id]
+        repo = get_actual_progress_repository()
+        existing = repo.get_by_review_id(payload.review_id)
+        if existing:
             raise HTTPException(
                 status_code=400,
-                detail=f"Progress event '{existing_id}' already created for review '{payload.review_id}'.",
+                detail=f"Progress event '{existing.id}' already created for review '{payload.review_id}'.",
             )
 
         # 3. Resolve target activity ID & progress percentage based on decision (APPROVED vs MODIFIED)
@@ -92,8 +90,7 @@ class ProgressWorkflowService:
             created_at=now,
         )
 
-        cls._progress_db[progress_id] = progress_event
-        cls._review_progress_map[payload.review_id] = progress_id
+        repo.create(progress_event)
 
         # 4. Automatically record Audit Event
         AuditService.record_audit_event(
@@ -121,12 +118,14 @@ class ProgressWorkflowService:
     @classmethod
     def get_progress_by_id(cls, progress_id: UUID) -> ProgressEventResponse:
         """Retrieve a progress event by its UUID."""
-        if progress_id not in cls._progress_db:
+        repo = get_actual_progress_repository()
+        item = repo.get_by_id(progress_id)
+        if not item:
             raise HTTPException(
                 status_code=404,
                 detail=f"Progress event '{progress_id}' not found.",
             )
-        return cls._progress_db[progress_id]
+        return item
 
     @classmethod
     def list_progress(
@@ -135,7 +134,8 @@ class ProgressWorkflowService:
         report_id: Optional[UUID] = None,
     ) -> List[ProgressEventResponse]:
         """List progress events with optional activity_id and report_id filters."""
-        items = list(cls._progress_db.values())
+        repo = get_actual_progress_repository()
+        items = repo.list_all()
         if activity_id is not None:
             items = [item for item in items if item.schedule_activity_id == activity_id]
         if report_id is not None:
@@ -144,6 +144,6 @@ class ProgressWorkflowService:
 
     @classmethod
     def clear_db(cls) -> None:
-        """Reset in-memory progress store for testing isolation."""
-        cls._progress_db.clear()
-        cls._review_progress_map.clear()
+        """Reset repository progress store for testing isolation."""
+        repo = get_actual_progress_repository()
+        repo.clear()

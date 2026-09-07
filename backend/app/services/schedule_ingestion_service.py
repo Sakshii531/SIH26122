@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 from fastapi import HTTPException
 from pydantic import ValidationError
 
+from app.repositories.factory import get_activity_repository
 from app.schemas.enums import ActivityLevel, ActivityStatus
 from app.schemas.schedule_activity import ScheduleActivityCreate, ScheduleActivityResponse
 from app.schemas.schedule_import import ScheduleImportSummaryResponse, ScheduleRowValidationError
@@ -115,6 +116,7 @@ class ScheduleIngestionService:
                 activity_create = cls._build_activity_create(row_dict, target_project_id)
                 activity_resp = ScheduleActivityResponse.model_validate(activity_create.model_dump())
                 valid_activities.append(activity_resp)
+                get_activity_repository().save_item(activity_resp)
             except ValidationError as ve:
                 err_msgs = [f"{e['loc'][-1]}: {e['msg']}" for e in ve.errors()]
                 validation_errors.append(

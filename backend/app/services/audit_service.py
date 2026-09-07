@@ -1,50 +1,34 @@
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Dict, List, Optional
-from uuid import UUID, uuid4
+from typing import List, Optional
+from uuid import UUID
 
 from fastapi import HTTPException
 
+from app.repositories.factory import get_audit_log_repository
 from app.schemas.audit_event import AuditEventCreate, AuditEventResponse
 
 
 class AuditService:
-    """In-memory service managing auditable execution history."""
-
-    _audit_db: Dict[UUID, AuditEventResponse] = {}
+    """Service managing auditable execution history via repository layer."""
 
     @classmethod
     def record_audit_event(cls, event: AuditEventCreate) -> AuditEventResponse:
         """Record an auditable execution history event."""
-        audit_id = uuid4()
-        now = datetime.utcnow()
-
-        audit_response = AuditEventResponse(
-            id=audit_id,
-            project_id=event.project_id,
-            event_type=event.event_type,
-            entity_type=event.entity_type,
-            entity_id=event.entity_id,
-            actor_id=event.actor_id,
-            actor_role=event.actor_role,
-            description=event.description,
-            payload=event.payload,
-            timestamp=now,
-        )
-
-        cls._audit_db[audit_id] = audit_response
-        return audit_response
+        repo = get_audit_log_repository()
+        return repo.create(event)
 
     @classmethod
     def get_audit_by_id(cls, audit_id: UUID) -> AuditEventResponse:
         """Retrieve an audit event by its UUID."""
-        if audit_id not in cls._audit_db:
+        repo = get_audit_log_repository()
+        item = repo.get_by_id(audit_id)
+        if not item:
             raise HTTPException(
                 status_code=404,
                 detail=f"Audit event '{audit_id}' not found.",
             )
-        return cls._audit_db[audit_id]
+        return item
 
     @classmethod
     def list_audit_events(
@@ -53,16 +37,11 @@ class AuditService:
         entity_id: Optional[UUID] = None,
     ) -> List[AuditEventResponse]:
         """List audit events with optional entity_type and entity_id filters."""
-        items = list(cls._audit_db.values())
-
-        if entity_type is not None:
-            items = [item for item in items if item.entity_type.lower() == entity_type.lower()]
-        if entity_id is not None:
-            items = [item for item in items if item.entity_id == entity_id]
-
-        return items
+        repo = get_audit_log_repository()
+        return repo.list_all(entity_type=entity_type, entity_id=entity_id)
 
     @classmethod
     def clear_db(cls) -> None:
-        """Reset in-memory audit store for testing isolation."""
-        cls._audit_db.clear()
+        """Reset repository store for testing isolation."""
+        repo = get_audit_log_repository()
+        repo.clear()

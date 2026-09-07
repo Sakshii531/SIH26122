@@ -1,65 +1,42 @@
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Dict, List, Optional
-from uuid import UUID, uuid4
+from typing import List, Optional
+from uuid import UUID
 
 from fastapi import HTTPException
 
+from app.repositories.factory import get_conflict_repository
 from app.schemas.conflict import ConflictCreate, ConflictResponse, ConflictUpdate
 
 
 class ConflictService:
-    """In-memory service managing progress extraction conflicts."""
-
-    _conflicts_db: Dict[UUID, ConflictResponse] = {}
+    """Service managing progress extraction conflicts via repository layer."""
 
     @classmethod
     def create_conflict(cls, payload: ConflictCreate) -> ConflictResponse:
         """Create a new conflict record."""
-        conflict_id = uuid4()
-        now = datetime.utcnow()
-
-        conflict = ConflictResponse(
-            id=conflict_id,
-            event_id=payload.event_id,
-            conflicting_event_id=payload.conflicting_event_id,
-            conflict_type=payload.conflict_type,
-            severity=payload.severity,
-            description=payload.description,
-            resolution_status=payload.resolution_status,
-            resolved_by=payload.resolved_by,
-            resolution_notes=payload.resolution_notes,
-            metadata=payload.metadata,
-            created_at=now,
-            updated_at=now,
-        )
-
-        cls._conflicts_db[conflict_id] = conflict
-        return conflict
+        repo = get_conflict_repository()
+        return repo.create(payload)
 
     @classmethod
     def get_conflict(cls, conflict_id: UUID) -> ConflictResponse:
         """Retrieve a conflict record by UUID."""
-        if conflict_id not in cls._conflicts_db:
+        repo = get_conflict_repository()
+        conflict = repo.get_by_id(conflict_id)
+        if not conflict:
             raise HTTPException(
                 status_code=404,
                 detail=f"Conflict record '{conflict_id}' not found.",
             )
-        return cls._conflicts_db[conflict_id]
+        return conflict
 
     @classmethod
     def update_conflict(cls, conflict_id: UUID, payload: ConflictUpdate) -> ConflictResponse:
         """Update a conflict record (e.g. resolve conflict)."""
-        conflict = cls.get_conflict(conflict_id)
-        now = datetime.utcnow()
-
-        updates = payload.model_dump(exclude_unset=True)
-        updates["updated_at"] = now
-
-        updated = conflict.model_copy(update=updates)
-        cls._conflicts_db[conflict_id] = updated
-        return updated
+        repo = get_conflict_repository()
+        # Verify existence first to return proper 404
+        cls.get_conflict(conflict_id)
+        return repo.update(conflict_id, payload)
 
     @classmethod
     def list_conflicts(
@@ -68,16 +45,11 @@ class ConflictService:
         resolution_status: Optional[str] = None,
     ) -> List[ConflictResponse]:
         """List conflicts with optional filtering."""
-        items = list(cls._conflicts_db.values())
-        if event_id is not None:
-            items = [
-                item for item in items if item.event_id == event_id or item.conflicting_event_id == event_id
-            ]
-        if resolution_status is not None:
-            items = [item for item in items if item.resolution_status.upper() == resolution_status.upper()]
-        return items
+        repo = get_conflict_repository()
+        return repo.list_all(event_id=event_id, resolution_status=resolution_status)
 
     @classmethod
     def clear_db(cls) -> None:
-        """Reset in-memory store for testing isolation."""
-        cls._conflicts_db.clear()
+        """Reset repository store for testing isolation."""
+        repo = get_conflict_repository()
+        repo.clear()
