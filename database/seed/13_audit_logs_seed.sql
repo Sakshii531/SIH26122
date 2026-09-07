@@ -30,4 +30,4 @@ VALUES
     'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
     'VALIDATE',
     'Actual progress validated by planner.'
-);
+); 
