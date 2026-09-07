@@ -1,0 +1,161 @@
+activity_id,wbs_id,activity_code,name,level,discipline,planned_start,planned_finish,duration,status,created_at
+ACT-001,WBS-311-1-1,CIV-001,Excavation and subgrade preparation for Crude Column C-101 foundation,L6,Civil,2026-08-01,2026-08-05,5,Completed,2026-08-01T08:00:00Z
+ACT-002,WBS-311-1-2,CIV-002,PCC blinding layer pouring for Column C-101 base slab,L6,Civil,2026-08-06,2026-08-08,3,Completed,2026-08-01T08:00:00Z
+ACT-003,WBS-311-1-2,CIV-003,Anchor bolt setting and template alignment for Column C-101,L6,Civil,2026-08-09,2026-08-12,4,Completed,2026-08-01T08:00:00Z
+ACT-004,WBS-311-1-2,CIV-004,Reinforcement steel rebar cage assembly for Column C-101 pedestal,L6,Civil,2026-08-13,2026-08-18,6,Completed,2026-08-01T08:00:00Z
+ACT-005,WBS-311-1-2,CIV-005,Formwork shuttering erection for Column C-101 pedestal foundation,L6,Civil,2026-08-19,2026-08-22,4,Completed,2026-08-01T08:00:00Z
+ACT-006,WBS-311-1-2,CIV-006,Heavy concrete pouring for Column C-101 foundation slab F-101,L6,Civil,2026-08-23,2026-08-24,2,Completed,2026-08-01T08:00:00Z
+ACT-007,WBS-311-1,CIV-007,Concrete curing and wet matting for Column C-101 foundation F-101,L5,Civil,2026-08-25,2026-08-31,7,In Progress,2026-08-01T08:00:00Z
+ACT-008,WBS-311-2,CIV-008,Excavation for Crude Charge Pump P-101 A/B foundation pit,L5,Civil,2026-08-21,2026-08-26,6,In Progress,2026-08-01T08:00:00Z
+ACT-009,WBS-311-2,CIV-009,PCC blinding and rebar binding for Pump P-101 foundation,L5,Civil,2026-08-27,2026-08-31,5,In Progress,2026-08-01T08:00:00Z
+ACT-010,WBS-321-1,CIV-010,Mass excavation for Hydrotreater Reactor R-201 foundation pedestal,L5,Civil,2026-08-23,2026-08-30,8,In Progress,2026-08-01T08:00:00Z
+ACT-011,WBS-321-1,CIV-011,Reinforcement steel cage fabrication for Reactor R-201 pedestal,L5,Civil,2026-08-31,2026-09-06,7,In Progress,2026-08-01T08:00:00Z
+ACT-012,WBS-411-1,CIV-012,Cooling Tower basin concrete slab excavation and subgrade compaction,L5,Civil,2026-08-26,2026-09-04,10,In Progress,2026-08-01T08:00:00Z
+ACT-013,WBS-311-2,CIV-013,Concrete pouring for Pump P-101 A/B foundation pedestal F-102,L5,Civil,2026-09-02,2026-09-04,3,Not Started,2026-08-01T08:00:00Z
+ACT-014,WBS-311-2,CIV-014,Formwork stripping and grout preparation for Pump P-101 foundation,L5,Civil,2026-09-05,2026-09-08,4,Not Started,2026-08-01T08:00:00Z
+ACT-015,WBS-321-1,CIV-015,Formwork setting and anchor bolt alignment for Reactor R-201 pedestal,L5,Civil,2026-09-07,2026-09-11,5,Not Started,2026-08-01T08:00:00Z
+ACT-016,WBS-321-1,CIV-016,Concrete pouring for Hydrotreater Reactor R-201 pedestal foundation,L5,Civil,2026-09-12,2026-09-14,3,Not Started,2026-08-01T08:00:00Z
+ACT-017,WBS-321-1,CIV-017,Substructure soil backfilling and compaction around Reactor R-201 base,L5,Civil,2026-09-15,2026-09-20,6,Not Started,2026-08-01T08:00:00Z
+ACT-018,WBS-411-1,CIV-018,PCC blinding layer pouring for Cooling Tower basin slab,L5,Civil,2026-09-06,2026-09-09,4,Not Started,2026-08-01T08:00:00Z
+ACT-019,WBS-411-1,CIV-019,Waterproof membrane installation and rebar matting for Cooling Basin,L5,Civil,2026-09-10,2026-09-17,8,Not Started,2026-08-01T08:00:00Z
+ACT-020,WBS-411-1,CIV-020,Concrete wall shuttering and pouring for Cooling Tower water basin,L5,Civil,2026-09-18,2026-09-29,12,Not Started,2026-08-01T08:00:00Z
+ACT-021,WBS-421-1,CIV-021,Substation 33kV building excavation and trenching,L5,Civil,2026-08-31,2026-09-06,7,Not Started,2026-08-01T08:00:00Z
+ACT-022,WBS-421-1,CIV-022,Substation foundation RCC raft concrete pouring,L5,Civil,2026-09-07,2026-09-14,8,Not Started,2026-08-01T08:00:00Z
+ACT-023,WBS-421-1,CIV-023,Substation masonry brickwork and concrete column casting,L5,Civil,2026-09-15,2026-09-29,15,Not Started,2026-08-01T08:00:00Z
+ACT-024,WBS-421-1,CIV-024,Precast concrete cable trench placement around substation perimeter,L5,Civil,2026-09-30,2026-10-09,10,Not Started,2026-08-01T08:00:00Z
+ACT-025,WBS-311-1,CIV-025,Non-shrink epoxy grouting under Column C-101 baseplate,L5,Civil,2026-09-20,2026-09-23,4,Not Started,2026-08-01T08:00:00Z
+ACT-026,WBS-321-1,CIV-026,Non-shrink epoxy grouting under Hydrotreater Reactor R-201 baseplate,L5,Civil,2026-09-25,2026-09-28,4,Not Started,2026-08-01T08:00:00Z
+ACT-027,WBS-312-1,STR-027,Primary Pipe Rack PR-101 baseplate levelling and anchor bolt verification,L5,Structural,2026-08-16,2026-08-19,4,Completed,2026-08-01T08:00:00Z
+ACT-028,WBS-312-1,STR-028,Pipe Rack PR-101 steel column erection Grid A1 to A5,L5,Structural,2026-08-20,2026-08-25,6,Completed,2026-08-01T08:00:00Z
+ACT-029,WBS-312-1,STR-029,Pipe Rack PR-101 transverse beam and longitudinal bracing erection,L5,Structural,2026-08-26,2026-09-02,8,In Progress,2026-08-01T08:00:00Z
+ACT-030,WBS-312-1-1,STR-030,PR-101 high-strength structural bolt torquing and alignment check,L6,Structural,2026-08-29,2026-09-02,5,In Progress,2026-08-01T08:00:00Z
+ACT-031,WBS-312-2,STR-031,Column C-101 lower operating platform steel framing erection,L5,Structural,2026-08-31,2026-09-06,7,In Progress,2026-08-01T08:00:00Z
+ACT-032,WBS-322-1,STR-032,Hydrotreater Unit pipe rack structural steel column hoisting,L5,Structural,2026-09-02,2026-09-07,6,In Progress,2026-08-01T08:00:00Z
+ACT-033,WBS-312-1,STR-033,Pipe Rack PR-101 tier 2 pipe support beam assembly,L5,Structural,2026-09-05,2026-09-11,7,Not Started,2026-08-01T08:00:00Z
+ACT-034,WBS-312-1,STR-034,Pipe Rack PR-101 tier 3 cable tray support arm erection,L5,Structural,2026-09-12,2026-09-17,6,Not Started,2026-08-01T08:00:00Z
+ACT-035,WBS-312-2,STR-035,Column C-101 middle maintenance platform steel structure erection,L5,Structural,2026-09-07,2026-09-12,6,Not Started,2026-08-01T08:00:00Z
+ACT-036,WBS-312-2,STR-036,Column C-101 top condenser platform steel frame assembly,L5,Structural,2026-09-13,2026-09-18,6,Not Started,2026-08-01T08:00:00Z
+ACT-037,WBS-312-2,STR-037,Structural steel stairway and safety cage ladder erection for C-101,L5,Structural,2026-09-19,2026-09-26,8,Not Started,2026-08-01T08:00:00Z
+ACT-038,WBS-312-2,STR-038,Platform galvanized grating and checkered plate fitting for C-101,L5,Structural,2026-09-27,2026-10-01,5,Not Started,2026-08-01T08:00:00Z
+ACT-039,WBS-312-2,STR-039,Safety handrail and toe-plate welding on Column C-101 operating platforms,L5,Structural,2026-10-02,2026-10-06,5,Not Started,2026-08-01T08:00:00Z
+ACT-040,WBS-322-1,STR-040,Hydrotreater main structure transverse steel beam erection,L5,Structural,2026-09-08,2026-09-15,8,Not Started,2026-08-01T08:00:00Z
+ACT-041,WBS-322-1,STR-041,Reactor R-201 maintenance platform steel framing erection,L5,Structural,2026-09-16,2026-09-22,7,Not Started,2026-08-01T08:00:00Z
+ACT-042,WBS-322-1,STR-042,Hydrotreater pipe rack monorail hoist beam installation,L5,Structural,2026-09-23,2026-09-26,4,Not Started,2026-08-01T08:00:00Z
+ACT-043,WBS-322-1,STR-043,DHT platform grating installation and fixing clip bolting,L5,Structural,2026-09-27,2026-10-02,6,Not Started,2026-08-01T08:00:00Z
+ACT-044,WBS-411-1,STR-044,Cooling Tower fan deck structural steel support framing erection,L5,Structural,2026-09-22,2026-09-28,7,Not Started,2026-08-01T08:00:00Z
+ACT-045,WBS-411-1,STR-045,Cooling Tower drift eliminator support steelwork assembly,L5,Structural,2026-09-29,2026-10-03,5,Not Started,2026-08-01T08:00:00Z
+ACT-046,WBS-421-1,STR-046,Substation roof structural steel truss and purlin erection,L5,Structural,2026-09-30,2026-10-07,8,Not Started,2026-08-01T08:00:00Z
+ACT-047,WBS-312-1,STR-047,Fireproofing cementitious coating application on PR-101 columns,L5,Structural,2026-10-05,2026-10-14,10,Not Started,2026-08-01T08:00:00Z
+ACT-048,WBS-322-1,STR-048,Intumescent fireproofing painting on Hydrotreater structural steel,L5,Structural,2026-10-08,2026-10-15,8,Not Started,2026-08-01T08:00:00Z
+ACT-049,WBS-312-1,STR-049,Structural steel touch-up painting and final QA inspection for PR-101,L5,Structural,2026-10-15,2026-10-19,5,Not Started,2026-08-01T08:00:00Z
+ACT-050,WBS-322-1,STR-050,DHT structure final bolt tensioning and NDT weld check,L5,Structural,2026-10-12,2026-10-15,4,Not Started,2026-08-01T08:00:00Z
+ACT-051,WBS-312-2,STR-051,Monorail crane beam load testing on C-101 top platform,L5,Structural,2026-10-20,2026-10-21,2,Not Started,2026-08-01T08:00:00Z
+ACT-052,WBS-322-1,STR-052,Reactor R-201 stair tower handrail and landing installation,L5,Structural,2026-10-16,2026-10-21,6,Not Started,2026-08-01T08:00:00Z
+ACT-053,WBS-313-1,MEC-053,Crude Distillation Column C-101 heavy lift crane setup and rigging inspection,L5,Mechanical,2026-08-27,2026-08-30,4,Completed,2026-08-01T08:00:00Z
+ACT-054,WBS-313-1-1,MEC-054,"Crude Column C-101 vessel tandem lift, erection, and verticality alignment",L6,Mechanical,2026-08-31,2026-09-02,3,In Progress,2026-08-01T08:00:00Z
+ACT-055,WBS-313-2,MEC-055,Crude Charge Pump P-101A skid placement on foundation F-102,L5,Mechanical,2026-09-03,2026-09-05,3,In Progress,2026-08-01T08:00:00Z
+ACT-056,WBS-313-2,MEC-056,Crude Charge Pump P-101B standby pump skid placement,L5,Mechanical,2026-09-06,2026-09-08,3,Not Started,2026-08-01T08:00:00Z
+ACT-057,WBS-313-2,MEC-057,Pump P-101 A/B drive motor coupling and laser shaft alignment,L5,Mechanical,2026-09-10,2026-09-13,4,Not Started,2026-08-01T08:00:00Z
+ACT-058,WBS-313-1,MEC-058,Crude Column C-101 internal fractionating tray installation,L5,Mechanical,2026-09-05,2026-09-14,10,Not Started,2026-08-01T08:00:00Z
+ACT-059,WBS-313-1,MEC-059,Crude Column C-101 top demister pad assembly and bolting,L5,Mechanical,2026-09-15,2026-09-18,4,Not Started,2026-08-01T08:00:00Z
+ACT-060,WBS-313-1,MEC-060,Heat Exchanger E-101 A/B shell positioning and nozzle alignment,L5,Mechanical,2026-09-12,2026-09-17,6,Not Started,2026-08-01T08:00:00Z
+ACT-061,WBS-313-1,MEC-061,Heat Exchanger E-102 tube bundle insertion and gasket fitting,L5,Mechanical,2026-09-18,2026-09-22,5,Not Started,2026-08-01T08:00:00Z
+ACT-062,WBS-323-1,MEC-062,Hydrotreater Reactor R-201 heavy rigging crane rigging check,L5,Mechanical,2026-09-15,2026-09-17,3,Not Started,2026-08-01T08:00:00Z
+ACT-063,WBS-323-1,MEC-063,Hydrotreater Reactor R-201 vertical hoisting and pedestal setting,L5,Mechanical,2026-09-18,2026-09-20,3,Not Started,2026-08-01T08:00:00Z
+ACT-064,WBS-323-1,MEC-064,Reactor R-201 internal catalyst bed support grid installation,L5,Mechanical,2026-09-22,2026-09-28,7,Not Started,2026-08-01T08:00:00Z
+ACT-065,WBS-323-1,MEC-065,High Pressure Recycle Gas Compressor C-201 skid positioning,L5,Mechanical,2026-09-25,2026-09-30,6,Not Started,2026-08-01T08:00:00Z
+ACT-066,WBS-323-1,MEC-066,Compressor C-201 lube oil system flushing and filter installation,L5,Mechanical,2026-10-01,2026-10-05,5,Not Started,2026-08-01T08:00:00Z
+ACT-067,WBS-412-1,MEC-067,Cooling Water Main Pump P-401A suction barrel and impeller assembly,L5,Mechanical,2026-09-18,2026-09-23,6,Not Started,2026-08-01T08:00:00Z
+ACT-068,WBS-412-1,MEC-068,Cooling Water Main Pump P-401B skid positioning and levelling,L5,Mechanical,2026-09-24,2026-09-28,5,Not Started,2026-08-01T08:00:00Z
+ACT-069,WBS-412-1,MEC-069,Cooling Tower axial fan deck assembly and gearbox alignment,L5,Mechanical,2026-09-30,2026-10-06,7,Not Started,2026-08-01T08:00:00Z
+ACT-070,WBS-313-2,MEC-070,Mechanical seal flush piping installation for Pump P-101 A/B,L5,Mechanical,2026-09-14,2026-09-17,4,Not Started,2026-08-01T08:00:00Z
+ACT-071,WBS-323-1,MEC-071,High pressure reactor feed pump P-201 shaft alignment and coupling,L5,Mechanical,2026-09-28,2026-10-01,4,Not Started,2026-08-01T08:00:00Z
+ACT-072,WBS-313-1,MEC-072,Column C-101 manway cover closure and torque tensioning,L5,Mechanical,2026-09-20,2026-09-22,3,Not Started,2026-08-01T08:00:00Z
+ACT-073,WBS-323-1,MEC-073,Hydrotreater separator vessel V-201 erection and nozzle orientation check,L5,Mechanical,2026-10-02,2026-10-06,5,Not Started,2026-08-01T08:00:00Z
+ACT-074,WBS-412-1,MEC-074,Chemical dosing package skid SK-401 placement and anchoring,L5,Mechanical,2026-10-05,2026-10-08,4,Not Started,2026-08-01T08:00:00Z
+ACT-075,WBS-313-1,MEC-075,Air Cooler AC-101 fan module hoisting and plenum chamber fitting,L5,Mechanical,2026-09-25,2026-10-02,8,Not Started,2026-08-01T08:00:00Z
+ACT-076,WBS-323-1,MEC-076,Compressor C-201 dry gas seal gas panel hookup and leak check,L5,Mechanical,2026-10-07,2026-10-11,5,Not Started,2026-08-01T08:00:00Z
+ACT-077,WBS-412-1,MEC-077,Cooling Tower distribution deck spray nozzle installation,L5,Mechanical,2026-10-07,2026-10-10,4,Not Started,2026-08-01T08:00:00Z
+ACT-078,WBS-313-1,MEC-078,Crude Column C-101 vessel final internal cleanliness inspection,L5,Mechanical,2026-09-19,2026-09-20,2,Not Started,2026-08-01T08:00:00Z
+ACT-079,WBS-314-1,PIP-079,Pipe support fabrication and base plate welding for PR-101 tier 1,L5,Piping,2026-08-29,2026-09-03,6,Completed,2026-08-01T08:00:00Z
+ACT-080,WBS-314-1,PIP-080,Process Overhead Line Piping Spool 24-CDU-001 field transport,L5,Piping,2026-09-02,2026-09-03,2,Completed,2026-08-01T08:00:00Z
+ACT-081,WBS-314-1-1,PIP-081,Process Overhead Line Piping Spool 24-CDU-001 erection on PR-101,L6,Piping,2026-09-04,2026-09-08,5,In Progress,2026-08-01T08:00:00Z
+ACT-082,WBS-314-1,PIP-082,Process Piping Spool 24-CDU-002 fit-up and root pass tack welding,L5,Piping,2026-09-06,2026-09-09,4,In Progress,2026-08-01T08:00:00Z
+ACT-083,WBS-314-2,PIP-083,Crude Feed Utility Piping 10-CW-102 support bracket installation,L5,Piping,2026-09-05,2026-09-09,5,In Progress,2026-08-01T08:00:00Z
+ACT-084,WBS-314-1,PIP-084,Process Piping Spool 24-CDU-002 SMAW cover pass welding and visual inspection,L5,Piping,2026-09-10,2026-09-13,4,Not Started,2026-08-01T08:00:00Z
+ACT-085,WBS-314-1,PIP-085,Process Overhead Line 24-CDU radiographic NDT weld inspection,L5,Piping,2026-09-14,2026-09-16,3,Not Started,2026-08-01T08:00:00Z
+ACT-086,WBS-314-1,PIP-086,Crude Column C-101 reboiler vapor line 18-CDU-005 spool erection,L5,Piping,2026-09-12,2026-09-17,6,Not Started,2026-08-01T08:00:00Z
+ACT-087,WBS-314-1,PIP-087,Crude Column C-101 reflux piping spool 12-CDU-010 flange fit-up,L5,Piping,2026-09-18,2026-09-22,5,Not Started,2026-08-01T08:00:00Z
+ACT-088,WBS-314-2,PIP-088,Pump P-101 A/B suction piping 14-CR-101 spool alignment,L5,Piping,2026-09-14,2026-09-18,5,Not Started,2026-08-01T08:00:00Z
+ACT-089,WBS-314-2,PIP-089,Pump P-101 A/B discharge piping 10-CR-102 check valve installation,L5,Piping,2026-09-19,2026-09-22,4,Not Started,2026-08-01T08:00:00Z
+ACT-090,WBS-314-2,PIP-090,Pump P-101 A/B suction strainer and spool flange bolting,L5,Piping,2026-09-23,2026-09-25,3,Not Started,2026-08-01T08:00:00Z
+ACT-091,WBS-324-1,PIP-091,DHT High Pressure Alloy Piping Spool 12-DHT-001 receiving & inspection,L5,Piping,2026-09-18,2026-09-20,3,Not Started,2026-08-01T08:00:00Z
+ACT-092,WBS-324-1,PIP-092,DHT Alloy Piping 12-DHT-001 pre-heating and GTAW root welding,L5,Piping,2026-09-21,2026-09-26,6,Not Started,2026-08-01T08:00:00Z
+ACT-093,WBS-324-1,PIP-093,DHT Alloy Piping 12-DHT-001 post-weld heat treatment (PWHT),L5,Piping,2026-09-27,2026-09-30,4,Not Started,2026-08-01T08:00:00Z
+ACT-094,WBS-324-1,PIP-094,DHT Alloy Piping 12-DHT-001 ultrasonic NDT weld testing,L5,Piping,2026-10-01,2026-10-03,3,Not Started,2026-08-01T08:00:00Z
+ACT-095,WBS-324-1,PIP-095,Reactor R-201 inlet feed piping spool 10-DHT-005 erection,L5,Piping,2026-10-04,2026-10-08,5,Not Started,2026-08-01T08:00:00Z
+ACT-096,WBS-324-1,PIP-096,Reactor R-201 effluent piping spool 14-DHT-008 flange torquing,L5,Piping,2026-10-09,2026-10-12,4,Not Started,2026-08-01T08:00:00Z
+ACT-097,WBS-413-1,PIP-097,Cooling Water Supply 30-CWS-401 underground carbon steel pipe laying,L5,Piping,2026-09-12,2026-09-21,10,Not Started,2026-08-01T08:00:00Z
+ACT-098,WBS-413-1,PIP-098,Cooling Water Return 30-CWR-402 underground pipe welding & wrapping,L5,Piping,2026-09-22,2026-09-29,8,Not Started,2026-08-01T08:00:00Z
+ACT-099,WBS-413-1,PIP-099,Cooling Water Header valve pit main isolation valve 30-inch installation,L5,Piping,2026-09-30,2026-10-04,5,Not Started,2026-08-01T08:00:00Z
+ACT-100,WBS-314-1,PIP-100,Process Unit 100 Main Overhead Line hydrotesting manifold connection,L5,Piping,2026-09-25,2026-09-27,3,Not Started,2026-08-01T08:00:00Z
+ACT-101,WBS-314-1,PIP-101,Process Unit 100 Main Overhead Line 24-CDU hydrostatic pressure hold test,L5,Piping,2026-09-28,2026-09-29,2,Not Started,2026-08-01T08:00:00Z
+ACT-102,WBS-314-1,PIP-102,Process Unit 100 Overhead Line post-hydrotest dewatering & air drying,L5,Piping,2026-09-30,2026-10-01,2,Not Started,2026-08-01T08:00:00Z
+ACT-103,WBS-324-1,PIP-103,DHT High Pressure Loop pneumatic pressure hold test,L5,Piping,2026-10-13,2026-10-14,2,Not Started,2026-08-01T08:00:00Z
+ACT-104,WBS-413-1,PIP-104,Cooling Water distribution line 24-CWS high-velocity flushing,L5,Piping,2026-10-05,2026-10-08,4,Not Started,2026-08-01T08:00:00Z
+ACT-105,WBS-314-2,PIP-105,Fuel Gas Utility Piping 4-FG-105 chemical cleaning and pickling,L5,Piping,2026-10-02,2026-10-06,5,Not Started,2026-08-01T08:00:00Z
+ACT-106,WBS-314-2,PIP-106,Plant Nitrogen Utility Line 3-N2-108 pressure hold and purging,L5,Piping,2026-10-07,2026-10-09,3,Not Started,2026-08-01T08:00:00Z
+ACT-107,WBS-314-1,PIP-107,Column C-101 safety relief valve SRV-101 A/B inlet piping erection,L5,Piping,2026-09-22,2026-09-25,4,Not Started,2026-08-01T08:00:00Z
+ACT-108,WBS-314-1,PIP-108,Flare Header Tie-in Piping Spool 16-FL-101 field welding,L5,Piping,2026-10-05,2026-10-10,6,Not Started,2026-08-01T08:00:00Z
+ACT-109,WBS-324-1,PIP-109,Reactor R-201 emergency depressurization valve line fitting,L5,Piping,2026-10-15,2026-10-18,4,Not Started,2026-08-01T08:00:00Z
+ACT-110,WBS-314-2,PIP-110,Steam Tracing Line 1/2-inch copper tubing installation on C-101 bottoms,L5,Piping,2026-10-10,2026-10-16,7,Not Started,2026-08-01T08:00:00Z
+ACT-111,WBS-314-1,PIP-111,Pipe insulation calcium silicate block fitting on 24-CDU overhead line,L5,Piping,2026-10-12,2026-10-19,8,Not Started,2026-08-01T08:00:00Z
+ACT-112,WBS-324-1,PIP-112,Mineral wool thermal insulation and aluminum cladding on DHT line 12-DHT,L5,Piping,2026-10-18,2026-10-25,8,Not Started,2026-08-01T08:00:00Z
+ACT-113,WBS-314-1,PIP-113,Piping line final spring hanger cold setting and pin removal,L5,Piping,2026-10-20,2026-10-22,3,Not Started,2026-08-01T08:00:00Z
+ACT-114,WBS-422-1,ELE-114,Substation 33kV Switchgear Panel unloading and room positioning,L5,Electrical,2026-08-31,2026-09-03,4,Completed,2026-08-01T08:00:00Z
+ACT-115,WBS-422-1,ELE-115,33kV Switchgear Panel busbar alignment and torque check,L5,Electrical,2026-09-04,2026-09-07,4,In Progress,2026-08-01T08:00:00Z
+ACT-116,WBS-315-1,ELE-116,CDU Primary Pipe Rack PR-101 cable tray bracket welding,L5,Electrical,2026-09-02,2026-09-07,6,In Progress,2026-08-01T08:00:00Z
+ACT-117,WBS-315-1,ELE-117,CDU Galvanized Ladder Cable Tray 600mm erection on PR-101 Tier 3,L5,Electrical,2026-09-08,2026-09-15,8,Not Started,2026-08-01T08:00:00Z
+ACT-118,WBS-315-1-1,ELE-118,Main 11kV Feeder Cable Tray Laying along PR-101 Grid A1-A5,L6,Electrical,2026-09-16,2026-09-22,7,Not Started,2026-08-01T08:00:00Z
+ACT-119,WBS-315-1,ELE-119,Instrument & Power Cable Tray separator partition installation,L5,Electrical,2026-09-23,2026-09-26,4,Not Started,2026-08-01T08:00:00Z
+ACT-120,WBS-422-1,ELE-120,11kV/415V Power Transformer TR-01 positioning on foundation pad,L5,Electrical,2026-09-10,2026-09-13,4,Not Started,2026-08-01T08:00:00Z
+ACT-121,WBS-422-1,ELE-121,"Transformer TR-01 oil filtration, dielectric breakdown testing, & filling",L5,Electrical,2026-09-14,2026-09-18,5,Not Started,2026-08-01T08:00:00Z
+ACT-122,WBS-422-1,ELE-122,Transformer TR-01 high voltage bushing assembly and cable box connection,L5,Electrical,2026-09-19,2026-09-22,4,Not Started,2026-08-01T08:00:00Z
+ACT-123,WBS-423-1,ELE-123,Substation 50x6mm copper earth grid conductor laying in cable trench,L5,Electrical,2026-09-08,2026-09-14,7,Not Started,2026-08-01T08:00:00Z
+ACT-124,WBS-423-1,ELE-124,Substation perimeter earthing rod driving and exothermic welding,L5,Electrical,2026-09-15,2026-09-20,6,Not Started,2026-08-01T08:00:00Z
+ACT-125,WBS-315-2,ELE-125,Crude Charge Pump P-101A 6.6kV medium voltage motor cable pulling,L5,Electrical,2026-09-20,2026-09-24,5,Not Started,2026-08-01T08:00:00Z
+ACT-126,WBS-315-2,ELE-126,Pump P-101A motor terminal box cable glanding & heat-shrink termination,L5,Electrical,2026-09-25,2026-09-27,3,Not Started,2026-08-01T08:00:00Z
+ACT-127,WBS-315-2,ELE-127,Pump P-101B motor power cable pulling from Substation MCC-100,L5,Electrical,2026-09-24,2026-09-28,5,Not Started,2026-08-01T08:00:00Z
+ACT-128,WBS-325-1,ELE-128,Hydrotreater Reactor R-201 area explosion-proof local control station mounting,L5,Electrical,2026-09-26,2026-09-30,5,Not Started,2026-08-01T08:00:00Z
+ACT-129,WBS-325-1,ELE-129,DHT Compressor C-201 main drive motor 11kV cable pulling FC-201,L5,Electrical,2026-10-02,2026-10-07,6,Not Started,2026-08-01T08:00:00Z
+ACT-130,WBS-325-1,ELE-130,Compressor C-201 motor high voltage cable termination and megger test,L5,Electrical,2026-10-08,2026-10-11,4,Not Started,2026-08-01T08:00:00Z
+ACT-131,WBS-315-2,ELE-131,CDU Process Structure explosion-proof LED light fixture mounting,L5,Electrical,2026-09-28,2026-10-05,8,Not Started,2026-08-01T08:00:00Z
+ACT-132,WBS-315-2,ELE-132,CDU Lighting distribution board LDB-101 wiring & circuit breaker test,L5,Electrical,2026-10-06,2026-10-09,4,Not Started,2026-08-01T08:00:00Z
+ACT-133,WBS-422-1,ELE-133,Uninterruptible Power Supply UPS-01 battery bank rack mounting & interlinks,L5,Electrical,2026-09-22,2026-09-26,5,Not Started,2026-08-01T08:00:00Z
+ACT-134,WBS-422-1,ELE-134,Substation MCC-100 415V busbar insulation resistance & hi-pot testing,L5,Electrical,2026-09-28,2026-09-30,3,Not Started,2026-08-01T08:00:00Z
+ACT-135,WBS-315-2,ELE-135,CDU Plant Equipment earthing boss bonding jumper connection,L5,Electrical,2026-10-05,2026-10-10,6,Not Started,2026-08-01T08:00:00Z
+ACT-136,WBS-325-1,ELE-136,DHT Area electrical earthing grid continuity and ground pit resistance test,L5,Electrical,2026-10-12,2026-10-15,4,Not Started,2026-08-01T08:00:00Z
+ACT-137,WBS-422-1,ELE-137,Substation 33kV switchgear relay calibration and trip test,L5,Electrical,2026-10-10,2026-10-14,5,Not Started,2026-08-01T08:00:00Z
+ACT-138,WBS-316-1,INS-138,CDU Process Area Field Junction Box JB-101 wall mounting,L5,Instrumentation,2026-09-06,2026-09-08,3,Completed,2026-08-01T08:00:00Z
+ACT-139,WBS-316-1,INS-139,Differential Pressure Transmitter PT-1004 stanchion mounting on C-101,L5,Instrumentation,2026-09-10,2026-09-12,3,In Progress,2026-08-01T08:00:00Z
+ACT-140,WBS-316-1-1,INS-140,Pressure Transmitter PT-1004 1/2-inch SS316 impulse tubing erection,L6,Instrumentation,2026-09-13,2026-09-16,4,Not Started,2026-08-01T08:00:00Z
+ACT-141,WBS-316-1,INS-141,Pressure Transmitter PT-1004 5-valve manifold hookup & leak test,L5,Instrumentation,2026-09-17,2026-09-19,3,Not Started,2026-08-01T08:00:00Z
+ACT-142,WBS-316-1,INS-142,Temperature Element TE-1008 thermowell installation in line 24-CDU,L5,Instrumentation,2026-09-15,2026-09-17,3,Not Started,2026-08-01T08:00:00Z
+ACT-143,WBS-316-1,INS-143,Radar Level Transmitter LT-101 flange mounting on Crude Column C-101,L5,Instrumentation,2026-09-18,2026-09-21,4,Not Started,2026-08-01T08:00:00Z
+ACT-144,WBS-316-1,INS-144,Control Valve CV-1001 pneumatic actuator positioner mounting & air hookup,L5,Instrumentation,2026-09-21,2026-09-24,4,Not Started,2026-08-01T08:00:00Z
+ACT-145,WBS-316-1,INS-145,Flow Orifice Plate FE-1002 line inspection and differential tapping hookup,L5,Instrumentation,2026-09-24,2026-09-26,3,Not Started,2026-08-01T08:00:00Z
+ACT-146,WBS-316-2,INS-146,Multi-pair overall shielded instrument signal cable pulling JB-101 to DCS,L5,Instrumentation,2026-09-20,2026-09-26,7,Not Started,2026-08-01T08:00:00Z
+ACT-147,WBS-316-2,INS-147,Instrument Cable Gland fitting and armor earthing at Junction Box JB-101,L5,Instrumentation,2026-09-27,2026-09-30,4,Not Started,2026-08-01T08:00:00Z
+ACT-148,WBS-316-2,INS-148,Junction Box JB-101 terminal strip wire crimping and ferrule check,L5,Instrumentation,2026-10-01,2026-10-04,4,Not Started,2026-08-01T08:00:00Z
+ACT-149,WBS-316-2,INS-149,Main Control Room DCS I/O cabinet instrument cable marshalling termination,L5,Instrumentation,2026-10-05,2026-10-10,6,Not Started,2026-08-01T08:00:00Z
+ACT-150,WBS-326-1,INS-150,DHT Reactor R-201 skin multipoint thermocouple TE-2001 mounting,L5,Instrumentation,2026-09-25,2026-09-29,5,Not Started,2026-08-01T08:00:00Z
+ACT-151,WBS-326-1,INS-151,DHT High Pressure Emergency Shutdown Valve ESDV-201 solenoid hookup,L5,Instrumentation,2026-09-30,2026-10-03,4,Not Started,2026-08-01T08:00:00Z
+ACT-152,WBS-326-1,INS-152,DHT Hydrogen gas detector GD-201 sensor stanchion positioning,L5,Instrumentation,2026-10-04,2026-10-07,4,Not Started,2026-08-01T08:00:00Z
+ACT-153,WBS-326-1,INS-153,DHT Fire & Gas Junction Box JB-205 cabling & glanding,L5,Instrumentation,2026-10-08,2026-10-11,4,Not Started,2026-08-01T08:00:00Z
+ACT-154,WBS-316-2,INS-154,Pressure Transmitter PT-1004 4-20mA loop calibration and DCS check,L5,Instrumentation,2026-10-09,2026-10-11,3,Not Started,2026-08-01T08:00:00Z
+ACT-155,WBS-316-2,INS-155,Temperature Transmitter TT-1008 bench calibration and RTD simulation,L5,Instrumentation,2026-10-11,2026-10-13,3,Not Started,2026-08-01T08:00:00Z
+ACT-156,WBS-316-2,INS-156,Control Valve CV-1001 4-20mA stroke test and open/close response check,L5,Instrumentation,2026-10-14,2026-10-16,3,Not Started,2026-08-01T08:00:00Z
+ACT-157,WBS-326-1,INS-157,Reactor R-201 Safety Interlock logic solver ESD loop simulation test,L5,Instrumentation,2026-10-16,2026-10-19,4,Not Started,2026-08-01T08:00:00Z
+ACT-158,WBS-316-2,INS-158,CDU Process Area Toxic Gas Sensor GD-101 calibration check,L5,Instrumentation,2026-10-13,2026-10-15,3,Not Started,2026-08-01T08:00:00Z
+ACT-159,WBS-326-1,INS-159,Compressor C-201 anti-surge valve positioner calibration,L5,Instrumentation,2026-10-18,2026-10-20,3,Not Started,2026-08-01T08:00:00Z
+ACT-160,WBS-316-2,INS-160,Crude Unit Process Control DCS screen graphic tag verification,L5,Instrumentation,2026-10-20,2026-10-24,5,Not Started,2026-08-01T08:00:00Z

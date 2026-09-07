@@ -1,0 +1,41 @@
+report_id,report_date,source_type,raw_text,referenced_activity_id,referenced_activity_code,expected_case
+REP-001,2026-08-05,synthetic_site_log,Completed excavation and subgrade preparation for Crude Column C-101 foundation today as per activity CIV-001.,ACT-001,CIV-001,clear_exact_match
+REP-002,2026-08-08,synthetic_supervisor_report,PCC blinding layer pouring for Column C-101 base slab completed successfully under CIV-002. Inspection passed.,ACT-002,CIV-002,clear_exact_match
+REP-003,2026-08-25,synthetic_site_log,Structural steel crew completed Pipe Rack PR-101 steel column erection Grid A1 to A5 for activity STR-028.,ACT-028,STR-028,clear_exact_match
+REP-004,2026-09-08,synthetic_shift_report,Piping team completed erection of Process Overhead Line Piping Spool 24-CDU-001 on PR-101 (PIP-081).,ACT-081,PIP-081,clear_exact_match
+REP-005,2026-09-02,synthetic_site_log,Heavy lift team achieved vertical alignment for Crude Column C-101 vessel erection under activity MEC-055.,ACT-054,MEC-054,clear_exact_match
+REP-006,2026-09-03,synthetic_supervisor_report,Mechanical team completed Crude Charge Pump P-101A skid placement on foundation F-102 (MEC-055).,ACT-055,MEC-055,clear_exact_match
+REP-007,2026-08-18,synthetic_site_diary,Civil gang finished rebar cage tying and steel shuttering for the C-101 main pedestal foundation.,ACT-004,CIV-004,paraphrased_match
+REP-008,2026-08-22,synthetic_shift_report,RMC transit mixers poured 140 m3 of grade M35 concrete for the C-101 main column foundation slab F-101.,ACT-006,CIV-006,paraphrased_match
+REP-009,2026-08-30,synthetic_site_log,Erectors assembled longitudinal steel beams and diagonal cross bracing across Tier 1 of PR-101 pipe rack.,ACT-029,STR-029,paraphrased_match
+REP-010,2026-09-06,synthetic_supervisor_report,Piping crew performed fit-up and completed root pass TIG welding on the 24-inch crude overhead line spool 24-CDU-002.,ACT-082,PIP-082,paraphrased_match
+REP-011,2026-09-04,synthetic_site_log,Electrical crew torqued busbar joints and checked insulation resistance for 33kV switchgear panels inside Substation 1.,ACT-114,ELE-114,paraphrased_match
+REP-012,2026-09-15,synthetic_shift_report,Instrument technicians installed wall-mounted junction box JB-101 in CDU process area and verified gland plate sealing.,ACT-138,INS-138,paraphrased_match
+REP-013,2026-08-12,synthetic_site_log,Anchor bolts aligned for C-101.,ACT-003,CIV-003,short_log
+REP-014,2026-08-19,synthetic_site_log,Baseplate levelling done PR-101.,ACT-027,STR-027,short_log
+REP-015,2026-09-01,synthetic_site_log,C-101 crane rigging inspection OK.,ACT-053,MEC-053,short_log
+REP-016,2026-09-05,synthetic_site_log,PR-101 tier 1 pipe supports welded.,ACT-079,PIP-079,short_log
+REP-017,2026-09-10,synthetic_site_log,PT-1004 stanchion mounted.,ACT-138,INS-138,short_log
+REP-018,2026-08-28,synthetic_shift_report,"Shift Report - Civil & Foundations:
+Civil contractor deployed 18 workers and 1 backhoe. Excavation pit for Crude Charge Pump P-101 foundation was completed to target elevation -2.5m. Subgrade was compacted and tested with plate load bearing test. Blind PCC pouring scheduled for tomorrow morning.",ACT-008,CIV-008,detailed_report
+REP-019,2026-09-12,synthetic_shift_report,"Daily Mechanical & Rigging Progress Log:
+Heavy lift crew utilized 500T crawler crane to position Hydrotreater Reactor R-201 onto foundation pedestal F-201. Vertical alignment checked using optical total station. Baseplate orientation verified within +/- 1mm tolerance. QC sign-off obtained.",ACT-063,MEC-063,detailed_report
+REP-020,2026-09-18,synthetic_shift_report,"Piping & NDT Progress Summary:
+High pressure alloy piping spools (spool ID 12-DHT-001) received at site laydown yard. Visual dimensional inspection and material test certificate (MTC) verification completed by QA engineer. Spools cleared for GTAW root welding.",ACT-090,PIP-090,detailed_report
+REP-021,2026-09-22,synthetic_shift_report,"Electrical Department Shift Summary:
+Electrical team welded 120 meters of heavy-duty galvanized ladder cable tray support brackets along PR-101 pipe rack Tier 3 (Grid A1 to A5). Hot-dip galvanizing touch-up paint applied on field welds. QA inspection form signed.",ACT-115,ELE-115,detailed_report
+REP-022,,synthetic_site_note,Rebar work ongoing for pump foundation.,ACT-009,CIV-009,missing_details
+REP-023,2026-09-14,synthetic_site_note,Completed cable tray work on main pipe rack.,ACT-116,ELE-116,missing_details
+REP-024,,synthetic_site_note,Impulse tubing installed for pressure transmitter in CDU area.,ACT-139,INS-139,missing_details
+REP-025,2026-09-20,synthetic_site_note,Pump motor aligned.,ACT-057,MEC-057,missing_details
+REP-026,2026-08-30,synthetic_site_log,Concrete pouring completed for pump foundation.,,,ambiguous_match
+REP-027,2026-09-10,synthetic_site_log,Piping spool welding completed in process area.,,,ambiguous_match
+REP-028,2026-09-15,synthetic_site_log,Cable pulling work done by electrical team.,,,ambiguous_match
+REP-029,2026-09-18,synthetic_site_log,Transmitter calibration completed.,,,ambiguous_match
+REP-030,2026-09-25,synthetic_site_log,Structural bolt torquing verified.,,,ambiguous_match
+REP-031,2026-08-24,synthetic_supervisor_report,"Site supervisor reported 100% completion of concrete pouring for Column C-101 foundation F-101 (CIV-006), but QC inspector flagged honeycombing on north face requiring repair.",ACT-006,CIV-006,conflicting_info
+REP-032,2026-09-09,synthetic_supervisor_report,"Piping team logged spool 24-CDU-001 erection as complete (PIP-081), however crane breakdown halted final alignment before bolting could be finished.",ACT-081,PIP-081,conflicting_info
+REP-033,2026-09-14,synthetic_supervisor_report,"Mechanical log states Pump P-101A skid (MEC-055) is fully set, but civil team notes anchor bolt grouting has not been poured.",ACT-055,MEC-055,conflicting_info
+REP-034,2026-09-22,synthetic_supervisor_report,"Electrical report marks 11kV cable tray laying (ELE-117) complete for Grid A1-A5, but site inspection revealed missing tray covers from Grid A3 to A5.",ACT-117,ELE-117,conflicting_info
+REP-035,2026-09-28,synthetic_shift_report,Cooling Tower civil basin slab excavation and subgrade compaction completed under CIV-012.,ACT-012,CIV-012,clear_exact_match
+REP-036,2026-10-02,synthetic_site_log,Substation 33kV Switchgear Panel positioning finished inside switchgear room (ELE-114).,ACT-114,ELE-114,clear_exact_match
