@@ -2,6 +2,7 @@
 Data loading and schedule representation modules for SIH26122 AI/ML.
 """
 
+from ai.data.schedule_context import ActivityContext, ScheduleContextBuilder
 from ai.data.schedule_loader import (
     Activity,
     Schedule,
@@ -18,4 +19,6 @@ __all__ = [
     "ScheduleDataset",
     "ScheduleLoader",
     "ScheduleValidationError",
+    "ActivityContext",
+    "ScheduleContextBuilder",
 ]
