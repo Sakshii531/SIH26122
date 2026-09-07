@@ -2,6 +2,7 @@
 Extraction module for SIH26122 AI/ML.
 """
 
+from ai.extraction.extractor import ProgressEventExtractor
 from ai.extraction.schemas import (
     EventDiscipline,
     EventStatus,
@@ -14,4 +15,5 @@ __all__ = [
     "ExtractionStatus",
     "EventDiscipline",
     "EventStatus",
+    "ProgressEventExtractor",
 ]
