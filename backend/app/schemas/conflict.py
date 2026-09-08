@@ -46,6 +46,7 @@ class ConflictUpdate(BaseModel):
 class ConflictResponse(ConflictBase):
     """Schema for conflict responses."""
 
+    conflicting_event_id: Optional[UUID] = Field(None, description="Conflicting event UUID when supplied by the source system")
     id: UUID = Field(default_factory=uuid4, description="Unique conflict UUID")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

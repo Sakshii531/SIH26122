@@ -46,6 +46,8 @@ class ActivityMatchCreate(ActivityMatchBase):
 class ActivityMatchResponse(ActivityMatchBase):
     """Schema for Activity Match responses."""
 
+    report_id: Optional[UUID] = Field(None, description="Source report UUID when supplied by the database row")
+    field_report_id: Optional[UUID] = Field(None, description="Source report UUID alias when supplied by the database row")
     id: UUID = Field(default_factory=uuid4, description="Unique activity match UUID")
     reviews: Optional[List[dict]] = Field(None, description="Associated planner reviews")
     created_at: datetime = Field(default_factory=datetime.utcnow)

@@ -34,6 +34,7 @@ class ProjectUpdate(BaseModel):
 class ProjectResponse(ProjectBase):
     """Schema for Project responses."""
 
+    code: Optional[str] = Field(None, description="Optional project code when supplied by the source system")
     id: UUID = Field(default_factory=uuid4, description="Unique project UUID")
     schedules: Optional[List[dict]] = Field(None, description="Associated project schedules")
     created_at: datetime = Field(default_factory=datetime.utcnow)

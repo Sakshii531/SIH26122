@@ -56,6 +56,9 @@ class ActivityUpdate(BaseModel):
 class ActivityResponse(ActivityBase):
     """Schema for Activity responses."""
 
+    project_id: Optional[UUID] = Field(None, description="Parent project UUID when supplied by the source system")
+    schedule_id: Optional[UUID] = Field(None, description="Parent schedule UUID when supplied by the source system")
+    discipline: Optional[str] = Field(None, description="Engineering discipline when supplied by the source system")
     id: UUID = Field(default_factory=uuid4, description="Unique activity UUID")
     actual_progress_records: Optional[List[dict]] = Field(None, description="Associated actual progress records")
     created_at: datetime = Field(default_factory=datetime.utcnow)

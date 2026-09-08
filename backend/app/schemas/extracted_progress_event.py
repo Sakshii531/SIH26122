@@ -34,6 +34,7 @@ class ExtractedProgressEventCreate(ExtractedProgressEventBase):
 class ExtractedProgressEventResponse(ExtractedProgressEventBase):
     """Schema for extracted progress event responses."""
 
+    extraction_confidence: float = Field(0.0, ge=0.0, le=1.0, description="Extraction confidence when supplied")
     id: UUID = Field(default_factory=uuid4, description="Unique extracted event UUID")
     matches: Optional[List[dict]] = Field(None, description="Associated AI activity matches")
     conflicts: Optional[List[dict]] = Field(None, description="Associated conflicts")

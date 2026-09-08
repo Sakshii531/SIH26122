@@ -39,6 +39,53 @@ from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.schemas.wbs import WBSCreate, WBSResponse, WBSUpdate
 
 
+def _row_for_model(row: dict, primary_key: str, aliases: Optional[dict[str, str]] = None) -> dict:
+    """Translate database naming into the API model's stable ``id`` field."""
+    data = dict(row)
+    if primary_key in data:
+        data["id"] = data[primary_key]
+    for model_field, database_field in (aliases or {}).items():
+        if model_field not in data and database_field in data:
+            data[model_field] = data[database_field]
+    if primary_key == "user_id" and isinstance(data.get("role"), str):
+        data["role"] = data["role"].upper()
+    if primary_key == "activity_id":
+        if data.get("level") is None:
+            data["level"] = "L5"
+        elif isinstance(data.get("level"), int):
+            data["level"] = "L5" if data["level"] <= 5 else "L6"
+        if data.get("status") == "Planned":
+            data["status"] = "NOT_STARTED"
+        elif data.get("status") == "In Progress":
+            data["status"] = "IN_PROGRESS"
+    if primary_key == "report_id" and data.get("source_format") == "Daily Progress Report":
+        data["source_format"] = "DPR"
+    if primary_key == "match_id" and data.get("match_status") == "Matched":
+        data["match_status"] = "AUTO_MATCHED"
+    if primary_key == "review_id" and data.get("decision") == "Approved":
+        data["decision"] = "APPROVED"
+    if primary_key == "progress_id" and data.get("status") == "In Progress":
+        data["status"] = "IN_PROGRESS"
+    if primary_key == "audit_id":
+        data["event_type"] = {
+            "CREATE": "REPORT_SUBMITTED",
+            "APPROVE": "REVIEW_SUBMITTED",
+            "UPDATE": "PROGRESS_UPDATED",
+            "VALIDATE": "PROGRESS_UPDATED",
+        }.get(data.get("action"), data.get("event_type"))
+    return data
+
+
+def _payload_for_table(data: dict, primary_key: str, aliases: Optional[dict[str, str]] = None) -> dict:
+    """Translate API model fields into the database table contract."""
+    payload = dict(data)
+    payload.pop("id", None)
+    for model_field, database_field in (aliases or {}).items():
+        if model_field in payload:
+            payload[database_field] = payload.pop(model_field)
+    return payload
+
+
 # 1. Projects Supabase Repository
 class SupabaseProjectRepository(BaseRepository[ProjectResponse], IProjectRepository):
     def __init__(self, client=None) -> None:
@@ -49,33 +96,38 @@ class SupabaseProjectRepository(BaseRepository[ProjectResponse], IProjectReposit
         project_id = uuid4()
         now = datetime.utcnow()
         data = project.model_dump(mode="json")
-        data["id"] = str(project_id)
+        data = _payload_for_table(data, "project_id")
+        data["project_id"] = str(project_id)
+        data.pop("code", None)
         data["created_at"] = now.isoformat()
         data["updated_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return ProjectResponse.model_validate(res.data[0])
+        return ProjectResponse.model_validate(_row_for_model(res.data[0], "project_id"))
 
     def save(self, entity: ProjectResponse) -> ProjectResponse:
-        data = entity.model_dump(mode="json")
+        data = _payload_for_table(entity.model_dump(mode="json"), "project_id")
+        data.pop("code", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ProjectResponse.model_validate(res.data[0])
+        return ProjectResponse.model_validate(_row_for_model(res.data[0], "project_id"))
 
     def get_by_id(self, entity_id: UUID) -> Optional[ProjectResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ProjectResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("project_id", str(entity_id)).execute()
+        return ProjectResponse.model_validate(_row_for_model(res.data[0], "project_id")) if res.data else None
 
     def list_all(self) -> List[ProjectResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [ProjectResponse.model_validate(r) for r in res.data]
+        return [ProjectResponse.model_validate(_row_for_model(r, "project_id")) for r in res.data]
 
     def update(self, project_id: UUID, payload: ProjectUpdate) -> Optional[ProjectResponse]:
         updates = payload.model_dump(exclude_unset=True, mode="json")
         updates["updated_at"] = datetime.utcnow().isoformat()
-        res = self._client.table(self.table_name).update(updates).eq("id", str(project_id)).execute()
-        return ProjectResponse.model_validate(res.data[0]) if res.data else None
+        updates = _payload_for_table(updates, "project_id")
+        updates.pop("code", None)
+        res = self._client.table(self.table_name).update(updates).eq("project_id", str(project_id)).execute()
+        return ProjectResponse.model_validate(_row_for_model(res.data[0], "project_id")) if res.data else None
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("project_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -92,39 +144,51 @@ class SupabaseScheduleRepository(BaseRepository[ScheduleResponse], IScheduleRepo
         schedule_id = uuid4()
         now = datetime.utcnow()
         data = schedule.model_dump(mode="json")
-        data["id"] = str(schedule_id)
-        if not data.get("version"):
-            data["version"] = "v1.0"
+        data = _payload_for_table(data, "schedule_id")
+        data["schedule_id"] = str(schedule_id)
+        data["source_type"] = data.pop("source_file", None) or "API"
+        data.pop("version", None)
+        data.pop("description", None)
+        data.pop("updated_at", None)
         data["created_at"] = now.isoformat()
         data["updated_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return ScheduleResponse.model_validate(res.data[0])
+        return ScheduleResponse.model_validate(_row_for_model(res.data[0], "schedule_id"))
 
     def save(self, entity: ScheduleResponse) -> ScheduleResponse:
-        data = entity.model_dump(mode="json")
+        data = _payload_for_table(entity.model_dump(mode="json"), "schedule_id")
+        data["source_type"] = data.pop("source_file", None) or "API"
+        data.pop("version", None)
+        data.pop("description", None)
+        data.pop("updated_at", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ScheduleResponse.model_validate(res.data[0])
+        return ScheduleResponse.model_validate(_row_for_model(res.data[0], "schedule_id"))
 
     def get_by_id(self, entity_id: UUID) -> Optional[ScheduleResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ScheduleResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("schedule_id", str(entity_id)).execute()
+        return ScheduleResponse.model_validate(_row_for_model(res.data[0], "schedule_id")) if res.data else None
 
     def list_by_project(self, project_id: UUID) -> List[ScheduleResponse]:
         res = self._client.table(self.table_name).select("*").eq("project_id", str(project_id)).execute()
-        return [ScheduleResponse.model_validate(r) for r in res.data]
+        return [ScheduleResponse.model_validate(_row_for_model(r, "schedule_id")) for r in res.data]
 
     def list_all(self) -> List[ScheduleResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [ScheduleResponse.model_validate(r) for r in res.data]
+        return [ScheduleResponse.model_validate(_row_for_model(r, "schedule_id")) for r in res.data]
 
     def update(self, schedule_id: UUID, payload: ScheduleUpdate) -> Optional[ScheduleResponse]:
         updates = payload.model_dump(exclude_unset=True, mode="json")
         updates["updated_at"] = datetime.utcnow().isoformat()
-        res = self._client.table(self.table_name).update(updates).eq("id", str(schedule_id)).execute()
-        return ScheduleResponse.model_validate(res.data[0]) if res.data else None
+        updates = _payload_for_table(updates, "schedule_id")
+        updates.pop("version", None)
+        updates.pop("description", None)
+        updates.pop("source_file", None)
+        updates.pop("updated_at", None)
+        res = self._client.table(self.table_name).update(updates).eq("schedule_id", str(schedule_id)).execute()
+        return ScheduleResponse.model_validate(_row_for_model(res.data[0], "schedule_id")) if res.data else None
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("schedule_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -141,37 +205,39 @@ class SupabaseWBSRepository(BaseRepository[WBSResponse], IWBSRepository):
         wbs_id = uuid4()
         now = datetime.utcnow()
         data = wbs.model_dump(mode="json")
-        data["id"] = str(wbs_id)
+        data = _payload_for_table(data, "wbs_id", {"wbs_code": "code", "wbs_name": "name"})
+        data["wbs_id"] = str(wbs_id)
         data["created_at"] = now.isoformat()
         data["updated_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return WBSResponse.model_validate(res.data[0])
+        return WBSResponse.model_validate(_row_for_model(res.data[0], "wbs_id", {"wbs_code": "code", "wbs_name": "name"}))
 
     def save(self, entity: WBSResponse) -> WBSResponse:
-        data = entity.model_dump(mode="json")
+        data = _payload_for_table(entity.model_dump(mode="json"), "wbs_id", {"wbs_code": "code", "wbs_name": "name"})
         res = self._client.table(self.table_name).upsert(data).execute()
-        return WBSResponse.model_validate(res.data[0])
+        return WBSResponse.model_validate(_row_for_model(res.data[0], "wbs_id", {"wbs_code": "code", "wbs_name": "name"}))
 
     def get_by_id(self, entity_id: UUID) -> Optional[WBSResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return WBSResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("wbs_id", str(entity_id)).execute()
+        return WBSResponse.model_validate(_row_for_model(res.data[0], "wbs_id", {"wbs_code": "code", "wbs_name": "name"})) if res.data else None
 
     def list_by_schedule(self, schedule_id: UUID) -> List[WBSResponse]:
         res = self._client.table(self.table_name).select("*").eq("schedule_id", str(schedule_id)).execute()
-        return [WBSResponse.model_validate(r) for r in res.data]
+        return [WBSResponse.model_validate(_row_for_model(r, "wbs_id", {"wbs_code": "code", "wbs_name": "name"})) for r in res.data]
 
     def list_all(self) -> List[WBSResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [WBSResponse.model_validate(r) for r in res.data]
+        return [WBSResponse.model_validate(_row_for_model(r, "wbs_id", {"wbs_code": "code", "wbs_name": "name"})) for r in res.data]
 
     def update(self, wbs_id: UUID, payload: WBSUpdate) -> Optional[WBSResponse]:
         updates = payload.model_dump(exclude_unset=True, mode="json")
         updates["updated_at"] = datetime.utcnow().isoformat()
-        res = self._client.table(self.table_name).update(updates).eq("id", str(wbs_id)).execute()
-        return WBSResponse.model_validate(res.data[0]) if res.data else None
+        updates = _payload_for_table(updates, "wbs_id", {"wbs_code": "code", "wbs_name": "name"})
+        res = self._client.table(self.table_name).update(updates).eq("wbs_id", str(wbs_id)).execute()
+        return WBSResponse.model_validate(_row_for_model(res.data[0], "wbs_id", {"wbs_code": "code", "wbs_name": "name"})) if res.data else None
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("wbs_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -188,44 +254,72 @@ class SupabaseActivityRepository(BaseRepository[ScheduleActivityResponse], IActi
         act_id = uuid4()
         now = datetime.utcnow()
         data = activity.model_dump(mode="json")
-        data["id"] = str(act_id)
+        data = _payload_for_table(data, "activity_id")
+        data["activity_id"] = str(act_id)
+        data.pop("project_id", None)
+        data.pop("schedule_id", None)
+        data["planned_start"] = data.pop("planned_start_date", None)
+        data["planned_finish"] = data.pop("planned_finish_date", None)
+        data.pop("actual_start_date", None)
+        data.pop("actual_finish_date", None)
+        data.pop("location", None)
+        if isinstance(data.get("level"), str):
+            data["level"] = 5 if data["level"] == "L5" else 6
+        data.pop("progress_percentage", None)
         data["created_at"] = now.isoformat()
         data["updated_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return ScheduleActivityResponse.model_validate(res.data[0])
+        return ScheduleActivityResponse.model_validate(_row_for_model(res.data[0], "activity_id"))
 
     def save_item(self, activity: ScheduleActivityResponse) -> ScheduleActivityResponse:
-        data = activity.model_dump(mode="json")
+        data = _payload_for_table(activity.model_dump(mode="json"), "activity_id")
+        data.pop("project_id", None)
+        data.pop("schedule_id", None)
+        data["planned_start"] = data.pop("planned_start_date", None)
+        data["planned_finish"] = data.pop("planned_finish_date", None)
+        data.pop("actual_start_date", None)
+        data.pop("actual_finish_date", None)
+        data.pop("location", None)
+        data.pop("progress_percentage", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ScheduleActivityResponse.model_validate(res.data[0])
+        return ScheduleActivityResponse.model_validate(_row_for_model(res.data[0], "activity_id"))
 
     def save(self, entity: ScheduleActivityResponse) -> ScheduleActivityResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[ScheduleActivityResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ScheduleActivityResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("activity_id", str(entity_id)).execute()
+        return ScheduleActivityResponse.model_validate(_row_for_model(res.data[0], "activity_id")) if res.data else None
 
     def get_by_code(self, activity_code: str) -> Optional[ScheduleActivityResponse]:
         res = self._client.table(self.table_name).select("*").ilike("activity_code", activity_code).execute()
-        return ScheduleActivityResponse.model_validate(res.data[0]) if res.data else None
+        return ScheduleActivityResponse.model_validate(_row_for_model(res.data[0], "activity_id")) if res.data else None
 
     def list_by_project(self, project_id: UUID) -> List[ScheduleActivityResponse]:
         res = self._client.table(self.table_name).select("*").eq("project_id", str(project_id)).execute()
-        return [ScheduleActivityResponse.model_validate(r) for r in res.data]
+        return [ScheduleActivityResponse.model_validate(_row_for_model(r, "activity_id")) for r in res.data]
 
     def list_all(self) -> List[ScheduleActivityResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [ScheduleActivityResponse.model_validate(r) for r in res.data]
+        return [ScheduleActivityResponse.model_validate(_row_for_model(r, "activity_id")) for r in res.data]
 
     def update(self, activity_id: UUID, payload: ScheduleActivityUpdate) -> Optional[ScheduleActivityResponse]:
         updates = payload.model_dump(exclude_unset=True, mode="json")
         updates["updated_at"] = datetime.utcnow().isoformat()
-        res = self._client.table(self.table_name).update(updates).eq("id", str(activity_id)).execute()
-        return ScheduleActivityResponse.model_validate(res.data[0]) if res.data else None
+        updates = _payload_for_table(updates, "activity_id")
+        updates["planned_start"] = updates.pop("planned_start_date", None)
+        updates["planned_finish"] = updates.pop("planned_finish_date", None)
+        updates.pop("actual_start_date", None)
+        updates.pop("actual_finish_date", None)
+        updates.pop("location", None)
+        if isinstance(updates.get("level"), str):
+            updates["level"] = 5 if updates["level"] == "L5" else 6
+        updates.pop("progress_percentage", None)
+        res = self._client.table(self.table_name).update(updates).eq("activity_id", str(activity_id)).execute()
+        return ScheduleActivityResponse.model_validate(_row_for_model(res.data[0], "activity_id")) if res.data else None
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("activity_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -242,37 +336,41 @@ class SupabaseFieldReportRepository(BaseRepository[FieldReportResponse], IFieldR
         rep_id = uuid4()
         now = datetime.utcnow()
         data = report.model_dump(mode="json")
-        data["id"] = str(rep_id)
+        data = _payload_for_table(data, "report_id", {"raw_content": "raw_text", "reporter_id": "submitted_by", "source_format": "report_type"})
+        data["report_id"] = str(rep_id)
+        data["status"] = data.pop("status", None) or "SUBMITTED"
+        data.pop("evidence", None)
         if not data.get("project_id"):
             data["project_id"] = str(uuid4())
         if "evidence" not in data or data["evidence"] is None:
             data["evidence"] = []
         data["created_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return FieldReportResponse.model_validate(res.data[0])
+        return FieldReportResponse.model_validate(_row_for_model(res.data[0], "report_id", {"raw_content": "raw_text", "reporter_id": "submitted_by", "source_format": "report_type"}))
 
     def save_item(self, report: FieldReportResponse) -> FieldReportResponse:
-        data = report.model_dump(mode="json")
+        data = _payload_for_table(report.model_dump(mode="json"), "report_id", {"raw_content": "raw_text", "reporter_id": "submitted_by", "source_format": "report_type"})
+        data.pop("evidence", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return FieldReportResponse.model_validate(res.data[0])
+        return FieldReportResponse.model_validate(_row_for_model(res.data[0], "report_id", {"raw_content": "raw_text", "reporter_id": "submitted_by", "source_format": "report_type"}))
 
     def save(self, entity: FieldReportResponse) -> FieldReportResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[FieldReportResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return FieldReportResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("report_id", str(entity_id)).execute()
+        return FieldReportResponse.model_validate(_row_for_model(res.data[0], "report_id", {"raw_content": "raw_text", "reporter_id": "submitted_by", "source_format": "report_type"})) if res.data else None
 
     def list_by_project(self, project_id: UUID) -> List[FieldReportResponse]:
         res = self._client.table(self.table_name).select("*").eq("project_id", str(project_id)).execute()
-        return [FieldReportResponse.model_validate(r) for r in res.data]
+        return [FieldReportResponse.model_validate(_row_for_model(r, "report_id", {"raw_content": "raw_text", "reporter_id": "submitted_by", "source_format": "report_type"})) for r in res.data]
 
     def list_all(self) -> List[FieldReportResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [FieldReportResponse.model_validate(r) for r in res.data]
+        return [FieldReportResponse.model_validate(_row_for_model(r, "report_id", {"raw_content": "raw_text", "reporter_id": "submitted_by", "source_format": "report_type"})) for r in res.data]
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("report_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -289,33 +387,38 @@ class SupabaseEvidenceRepository(BaseRepository[EvidenceResponse], IEvidenceRepo
         ev_id = uuid4()
         now = datetime.utcnow()
         data = evidence.model_dump(mode="json")
-        data["id"] = str(ev_id)
+        data = _payload_for_table(data, "evidence_id", {"file_name": "evidence_type"})
+        data["evidence_id"] = str(ev_id)
+        data.pop("mime_type", None)
+        data.pop("description", None)
         data["created_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return EvidenceResponse.model_validate(res.data[0])
+        return EvidenceResponse.model_validate(_row_for_model(res.data[0], "evidence_id", {"file_name": "evidence_type"}))
 
     def save_item(self, evidence: EvidenceResponse) -> EvidenceResponse:
-        data = evidence.model_dump(mode="json")
+        data = _payload_for_table(evidence.model_dump(mode="json"), "evidence_id", {"file_name": "evidence_type"})
+        data.pop("mime_type", None)
+        data.pop("description", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return EvidenceResponse.model_validate(res.data[0])
+        return EvidenceResponse.model_validate(_row_for_model(res.data[0], "evidence_id", {"file_name": "evidence_type"}))
 
     def save(self, entity: EvidenceResponse) -> EvidenceResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[EvidenceResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return EvidenceResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("evidence_id", str(entity_id)).execute()
+        return EvidenceResponse.model_validate(_row_for_model(res.data[0], "evidence_id", {"file_name": "evidence_type"})) if res.data else None
 
     def list_by_report(self, report_id: UUID) -> List[EvidenceResponse]:
         res = self._client.table(self.table_name).select("*").eq("report_id", str(report_id)).execute()
-        return [EvidenceResponse.model_validate(r) for r in res.data]
+        return [EvidenceResponse.model_validate(_row_for_model(r, "evidence_id", {"file_name": "evidence_type"})) for r in res.data]
 
     def list_all(self) -> List[EvidenceResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [EvidenceResponse.model_validate(r) for r in res.data]
+        return [EvidenceResponse.model_validate(_row_for_model(r, "evidence_id", {"file_name": "evidence_type"})) for r in res.data]
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("evidence_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -334,33 +437,36 @@ class SupabaseExtractedProgressEventRepository(
         ev_id = uuid4()
         now = datetime.utcnow()
         data = event.model_dump(mode="json")
-        data["id"] = str(ev_id)
+        data = _payload_for_table(data, "event_id", {"extracted_activity_name": "activity_description", "extracted_progress_percentage": "progress_value"})
+        data["event_id"] = str(ev_id)
+        data.pop("extraction_confidence", None)
         data["created_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return ExtractedProgressEventResponse.model_validate(res.data[0])
+        return ExtractedProgressEventResponse.model_validate(_row_for_model(res.data[0], "event_id", {"extracted_activity_name": "activity_description", "extracted_progress_percentage": "progress_value"}))
 
     def save_item(self, event: ExtractedProgressEventResponse) -> ExtractedProgressEventResponse:
-        data = event.model_dump(mode="json")
+        data = _payload_for_table(event.model_dump(mode="json"), "event_id", {"extracted_activity_name": "activity_description", "extracted_progress_percentage": "progress_value"})
+        data.pop("extraction_confidence", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ExtractedProgressEventResponse.model_validate(res.data[0])
+        return ExtractedProgressEventResponse.model_validate(_row_for_model(res.data[0], "event_id", {"extracted_activity_name": "activity_description", "extracted_progress_percentage": "progress_value"}))
 
     def save(self, entity: ExtractedProgressEventResponse) -> ExtractedProgressEventResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[ExtractedProgressEventResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ExtractedProgressEventResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("event_id", str(entity_id)).execute()
+        return ExtractedProgressEventResponse.model_validate(_row_for_model(res.data[0], "event_id", {"extracted_activity_name": "activity_description", "extracted_progress_percentage": "progress_value"})) if res.data else None
 
     def list_by_report(self, report_id: UUID) -> List[ExtractedProgressEventResponse]:
         res = self._client.table(self.table_name).select("*").eq("report_id", str(report_id)).execute()
-        return [ExtractedProgressEventResponse.model_validate(r) for r in res.data]
+        return [ExtractedProgressEventResponse.model_validate(_row_for_model(r, "event_id", {"extracted_activity_name": "activity_description", "extracted_progress_percentage": "progress_value"})) for r in res.data]
 
     def list_all(self) -> List[ExtractedProgressEventResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [ExtractedProgressEventResponse.model_validate(r) for r in res.data]
+        return [ExtractedProgressEventResponse.model_validate(_row_for_model(r, "event_id", {"extracted_activity_name": "activity_description", "extracted_progress_percentage": "progress_value"})) for r in res.data]
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("event_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -377,37 +483,44 @@ class SupabaseActivityMatchRepository(BaseRepository[ActivityMatchResponse], IAc
         m_id = uuid4()
         now = datetime.utcnow()
         data = match.model_dump(mode="json")
-        data["id"] = str(m_id)
+        data = _payload_for_table(data, "match_id")
+        data["match_id"] = str(m_id)
+        data.pop("report_id", None)
+        data.pop("field_report_id", None)
+        data.pop("schedule_activity_id", None)
         if not data.get("field_report_id"):
             data["field_report_id"] = data.get("report_id")
         if not data.get("schedule_activity_id"):
             data["schedule_activity_id"] = data.get("activity_id")
         data["created_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return ActivityMatchResponse.model_validate(res.data[0])
+        return ActivityMatchResponse.model_validate(_row_for_model(res.data[0], "match_id"))
 
     def save_item(self, match: ActivityMatchResponse) -> ActivityMatchResponse:
-        data = match.model_dump(mode="json")
+        data = _payload_for_table(match.model_dump(mode="json"), "match_id")
+        data.pop("report_id", None)
+        data.pop("field_report_id", None)
+        data.pop("schedule_activity_id", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ActivityMatchResponse.model_validate(res.data[0])
+        return ActivityMatchResponse.model_validate(_row_for_model(res.data[0], "match_id"))
 
     def save(self, entity: ActivityMatchResponse) -> ActivityMatchResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[ActivityMatchResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ActivityMatchResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("match_id", str(entity_id)).execute()
+        return ActivityMatchResponse.model_validate(_row_for_model(res.data[0], "match_id")) if res.data else None
 
     def list_by_event(self, event_id: UUID) -> List[ActivityMatchResponse]:
         res = self._client.table(self.table_name).select("*").eq("event_id", str(event_id)).execute()
-        return [ActivityMatchResponse.model_validate(r) for r in res.data]
+        return [ActivityMatchResponse.model_validate(_row_for_model(r, "match_id")) for r in res.data]
 
     def list_all(self) -> List[ActivityMatchResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [ActivityMatchResponse.model_validate(r) for r in res.data]
+        return [ActivityMatchResponse.model_validate(_row_for_model(r, "match_id")) for r in res.data]
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("match_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -424,38 +537,47 @@ class SupabasePlannerReviewRepository(BaseRepository[ReviewItemResponse], IPlann
         review_id = uuid4()
         now = datetime.utcnow()
         data = payload.model_dump(mode="json")
-        data["id"] = str(review_id)
+        data = _payload_for_table(data, "review_id")
+        data["review_id"] = str(review_id)
+        data.pop("report_id", None)
+        data.pop("schedule_activity_id", None)
+        data.pop("confidence_score", None)
+        data.pop("extracted_progress_percentage", None)
         data["status"] = ReviewStatus.PENDING.value
         data["created_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return ReviewItemResponse.model_validate(res.data[0])
+        return ReviewItemResponse.model_validate(_row_for_model(res.data[0], "review_id"))
 
     def save_item(self, review: ReviewItemResponse) -> ReviewItemResponse:
-        data = review.model_dump(mode="json")
+        data = _payload_for_table(review.model_dump(mode="json"), "review_id")
+        data.pop("report_id", None)
+        data.pop("schedule_activity_id", None)
+        data.pop("confidence_score", None)
+        data.pop("extracted_progress_percentage", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ReviewItemResponse.model_validate(res.data[0])
+        return ReviewItemResponse.model_validate(_row_for_model(res.data[0], "review_id"))
 
     def save(self, entity: ReviewItemResponse) -> ReviewItemResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[ReviewItemResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ReviewItemResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("review_id", str(entity_id)).execute()
+        return ReviewItemResponse.model_validate(_row_for_model(res.data[0], "review_id")) if res.data else None
 
     def list_all(self, status: Optional[ReviewStatus] = None) -> List[ReviewItemResponse]:
         query = self._client.table(self.table_name).select("*")
         if status is not None:
             query = query.eq("status", status.value if hasattr(status, "value") else str(status))
         res = query.execute()
-        return [ReviewItemResponse.model_validate(r) for r in res.data]
+        return [ReviewItemResponse.model_validate(_row_for_model(r, "review_id")) for r in res.data]
 
     def update(self, review_id: UUID, review: ReviewItemResponse) -> ReviewItemResponse:
         data = review.model_dump(mode="json")
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ReviewItemResponse.model_validate(res.data[0]) if res.data else review
+        return ReviewItemResponse.model_validate(_row_for_model(res.data[0], "review_id")) if res.data else review
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("review_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -472,23 +594,30 @@ class SupabaseConflictRepository(BaseRepository[ConflictResponse], IConflictRepo
         conflict_id = uuid4()
         now = datetime.utcnow()
         data = payload.model_dump(mode="json")
-        data["id"] = str(conflict_id)
+        data = _payload_for_table(data, "conflict_id")
+        data["conflict_id"] = str(conflict_id)
+        data.pop("conflicting_event_id", None)
+        data.pop("resolution_status", None)
+        data.pop("resolution_notes", None)
         data["created_at"] = now.isoformat()
         data["updated_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return ConflictResponse.model_validate(res.data[0])
+        return ConflictResponse.model_validate(_row_for_model(res.data[0], "conflict_id"))
 
     def save_item(self, conflict: ConflictResponse) -> ConflictResponse:
-        data = conflict.model_dump(mode="json")
+        data = _payload_for_table(conflict.model_dump(mode="json"), "conflict_id")
+        data.pop("conflicting_event_id", None)
+        data.pop("resolution_status", None)
+        data.pop("resolution_notes", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ConflictResponse.model_validate(res.data[0])
+        return ConflictResponse.model_validate(_row_for_model(res.data[0], "conflict_id"))
 
     def save(self, entity: ConflictResponse) -> ConflictResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[ConflictResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ConflictResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("conflict_id", str(entity_id)).execute()
+        return ConflictResponse.model_validate(_row_for_model(res.data[0], "conflict_id")) if res.data else None
 
     def update(self, conflict_id: UUID, payload: ConflictUpdate) -> ConflictResponse:
         item = self.get_by_id(conflict_id)
@@ -497,9 +626,10 @@ class SupabaseConflictRepository(BaseRepository[ConflictResponse], IConflictRepo
         now = datetime.utcnow()
         updates = payload.model_dump(exclude_unset=True, mode="json")
         updates["updated_at"] = now.isoformat()
-        res = self._client.table(self.table_name).update(updates).eq("id", str(conflict_id)).execute()
+        updates = _payload_for_table(updates, "conflict_id")
+        res = self._client.table(self.table_name).update(updates).eq("conflict_id", str(conflict_id)).execute()
         if res.data:
-            return ConflictResponse.model_validate(res.data[0])
+            return ConflictResponse.model_validate(_row_for_model(res.data[0], "conflict_id"))
         updated = item.model_copy(update=payload.model_dump(exclude_unset=True))
         return updated
 
@@ -514,10 +644,10 @@ class SupabaseConflictRepository(BaseRepository[ConflictResponse], IConflictRepo
         if resolution_status is not None:
             query = query.ilike("resolution_status", resolution_status)
         res = query.execute()
-        return [ConflictResponse.model_validate(r) for r in res.data]
+        return [ConflictResponse.model_validate(_row_for_model(r, "conflict_id")) for r in res.data]
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("conflict_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -532,19 +662,23 @@ class SupabaseActualProgressRepository(BaseRepository[ProgressEventResponse], IA
 
     def create(self, progress: ProgressEventResponse) -> ProgressEventResponse:
         data = progress.model_dump(mode="json")
+        data = _payload_for_table(data, "progress_id", {"progress_percentage": "progress_value"})
+        data["progress_id"] = data.pop("id", str(uuid4()))
+        data.pop("project_id", None)
+        data.pop("review_id", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return ProgressEventResponse.model_validate(res.data[0])
+        return ProgressEventResponse.model_validate(_row_for_model(res.data[0], "progress_id", {"progress_percentage": "progress_value"}))
 
     def save(self, entity: ProgressEventResponse) -> ProgressEventResponse:
         return self.create(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[ProgressEventResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return ProgressEventResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("progress_id", str(entity_id)).execute()
+        return ProgressEventResponse.model_validate(_row_for_model(res.data[0], "progress_id", {"progress_percentage": "progress_value"})) if res.data else None
 
     def get_by_review_id(self, review_id: UUID) -> Optional[ProgressEventResponse]:
         res = self._client.table(self.table_name).select("*").eq("review_id", str(review_id)).execute()
-        return ProgressEventResponse.model_validate(res.data[0]) if res.data else None
+        return ProgressEventResponse.model_validate(_row_for_model(res.data[0], "progress_id", {"progress_percentage": "progress_value"})) if res.data else None
 
     def list_all(
         self,
@@ -557,10 +691,10 @@ class SupabaseActualProgressRepository(BaseRepository[ProgressEventResponse], IA
         if status is not None:
             query = query.eq("status", status.value if hasattr(status, "value") else str(status))
         res = query.execute()
-        return [ProgressEventResponse.model_validate(r) for r in res.data]
+        return [ProgressEventResponse.model_validate(_row_for_model(r, "progress_id", {"progress_percentage": "progress_value"})) for r in res.data]
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("progress_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -577,22 +711,27 @@ class SupabaseAuditLogRepository(BaseRepository[AuditEventResponse], IAuditLogRe
         audit_id = uuid4()
         now = datetime.utcnow()
         data = event.model_dump(mode="json")
-        data["id"] = str(audit_id)
+        data = _payload_for_table(data, "audit_id", {"actor_id": "user_id", "event_type": "action", "description": "details"})
+        data["audit_id"] = str(audit_id)
+        data.pop("project_id", None)
+        data.pop("payload", None)
         data["timestamp"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return AuditEventResponse.model_validate(res.data[0])
+        return AuditEventResponse.model_validate(_row_for_model(res.data[0], "audit_id", {"actor_id": "user_id", "event_type": "action", "description": "details"}))
 
     def save_item(self, log: AuditEventResponse) -> AuditEventResponse:
-        data = log.model_dump(mode="json")
+        data = _payload_for_table(log.model_dump(mode="json"), "audit_id", {"actor_id": "user_id", "event_type": "action", "description": "details"})
+        data.pop("project_id", None)
+        data.pop("payload", None)
         res = self._client.table(self.table_name).upsert(data).execute()
-        return AuditEventResponse.model_validate(res.data[0])
+        return AuditEventResponse.model_validate(_row_for_model(res.data[0], "audit_id", {"actor_id": "user_id", "event_type": "action", "description": "details"}))
 
     def save(self, entity: AuditEventResponse) -> AuditEventResponse:
         return self.save_item(entity)
 
     def get_by_id(self, entity_id: UUID) -> Optional[AuditEventResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return AuditEventResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("audit_id", str(entity_id)).execute()
+        return AuditEventResponse.model_validate(_row_for_model(res.data[0], "audit_id", {"actor_id": "user_id", "event_type": "action", "description": "details"})) if res.data else None
 
     def list_all(
         self,
@@ -605,10 +744,10 @@ class SupabaseAuditLogRepository(BaseRepository[AuditEventResponse], IAuditLogRe
         if entity_id is not None:
             query = query.eq("entity_id", str(entity_id))
         res = query.execute()
-        return [AuditEventResponse.model_validate(r) for r in res.data]
+        return [AuditEventResponse.model_validate(_row_for_model(r, "audit_id", {"actor_id": "user_id", "event_type": "action", "description": "details"})) for r in res.data]
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("audit_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:
@@ -625,37 +764,46 @@ class SupabaseUserRepository(BaseRepository[UserResponse], IUserRepository):
         u_id = uuid4()
         now = datetime.utcnow()
         data = user.model_dump(mode="json")
-        data["id"] = str(u_id)
+        data = _payload_for_table(data, "user_id", {"username": "name", "full_name": "name"})
+        data["user_id"] = str(u_id)
+        data.pop("is_active", None)
+        if isinstance(data.get("role"), str):
+            data["role"] = {"PLANNER": "Planner", "SUPERVISOR": "Supervisor"}.get(data["role"].upper(), data["role"])
         data["created_at"] = now.isoformat()
         data["updated_at"] = now.isoformat()
         res = self._client.table(self.table_name).insert(data).execute()
-        return UserResponse.model_validate(res.data[0])
+        return UserResponse.model_validate(_row_for_model(res.data[0], "user_id", {"username": "name", "full_name": "name"}))
 
     def save(self, entity: UserResponse) -> UserResponse:
-        data = entity.model_dump(mode="json")
+        data = _payload_for_table(entity.model_dump(mode="json"), "user_id", {"username": "name", "full_name": "name"})
+        data.pop("is_active", None)
+        if isinstance(data.get("role"), str):
+            data["role"] = {"PLANNER": "Planner", "SUPERVISOR": "Supervisor"}.get(data["role"].upper(), data["role"])
         res = self._client.table(self.table_name).upsert(data).execute()
-        return UserResponse.model_validate(res.data[0])
+        return UserResponse.model_validate(_row_for_model(res.data[0], "user_id", {"username": "name", "full_name": "name"}))
 
     def get_by_id(self, entity_id: UUID) -> Optional[UserResponse]:
-        res = self._client.table(self.table_name).select("*").eq("id", str(entity_id)).execute()
-        return UserResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").eq("user_id", str(entity_id)).execute()
+        return UserResponse.model_validate(_row_for_model(res.data[0], "user_id", {"username": "name", "full_name": "name"})) if res.data else None
 
     def get_by_username(self, username: str) -> Optional[UserResponse]:
-        res = self._client.table(self.table_name).select("*").ilike("username", username).execute()
-        return UserResponse.model_validate(res.data[0]) if res.data else None
+        res = self._client.table(self.table_name).select("*").ilike("name", username).execute()
+        return UserResponse.model_validate(_row_for_model(res.data[0], "user_id", {"username": "name", "full_name": "name"})) if res.data else None
 
     def list_all(self) -> List[UserResponse]:
         res = self._client.table(self.table_name).select("*").execute()
-        return [UserResponse.model_validate(r) for r in res.data]
+        return [UserResponse.model_validate(_row_for_model(r, "user_id", {"username": "name", "full_name": "name"})) for r in res.data]
 
     def update(self, user_id: UUID, payload: UserUpdate) -> Optional[UserResponse]:
         updates = payload.model_dump(exclude_unset=True, mode="json")
         updates["updated_at"] = datetime.utcnow().isoformat()
-        res = self._client.table(self.table_name).update(updates).eq("id", str(user_id)).execute()
-        return UserResponse.model_validate(res.data[0]) if res.data else None
+        updates = _payload_for_table(updates, "user_id", {"username": "name", "full_name": "name"})
+        updates.pop("is_active", None)
+        res = self._client.table(self.table_name).update(updates).eq("user_id", str(user_id)).execute()
+        return UserResponse.model_validate(_row_for_model(res.data[0], "user_id", {"username": "name", "full_name": "name"})) if res.data else None
 
     def delete(self, entity_id: UUID) -> bool:
-        res = self._client.table(self.table_name).delete().eq("id", str(entity_id)).execute()
+        res = self._client.table(self.table_name).delete().eq("user_id", str(entity_id)).execute()
         return len(res.data) > 0 if res.data is not None else False
 
     def clear(self) -> None:

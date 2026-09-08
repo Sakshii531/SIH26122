@@ -35,6 +35,7 @@ Usage (future Supabase repository implementations)
 
 from __future__ import annotations
 
+from contextvars import ContextVar
 from typing import Optional
 
 from supabase import Client, create_client
@@ -44,6 +45,22 @@ from app.core.config import get_settings
 # Module-level singletons — populated on first call, None until then.
 _anon_client: Optional[Client] = None
 _service_role_client: Optional[Client] = None
+_request_access_token: ContextVar[Optional[str]] = ContextVar("supabase_access_token", default=None)
+
+
+def set_request_access_token(token: str) -> None:
+    """Bind the current request's Supabase access token to its context."""
+    _request_access_token.set(token)
+
+
+def clear_request_access_token() -> None:
+    """Clear the current request token after request-scoped work completes."""
+    _request_access_token.set(None)
+
+
+def get_request_access_token() -> Optional[str]:
+    """Return the access token bound to the current request, if any."""
+    return _request_access_token.get()
 
 
 def get_supabase_client() -> Client:
@@ -60,6 +77,11 @@ def get_supabase_client() -> Client:
         If ``SUPABASE_URL`` or ``SUPABASE_KEY`` are not set in the environment.
     """
     global _anon_client
+    access_token = get_request_access_token()
+    if access_token:
+        client = _build_client(key_name="SUPABASE_KEY")
+        client.postgrest.auth(access_token)
+        return client
     if _anon_client is None:
         _anon_client = _build_client(key_name="SUPABASE_KEY")
     return _anon_client
@@ -95,6 +117,7 @@ def reset_clients() -> None:
     global _anon_client, _service_role_client
     _anon_client = None
     _service_role_client = None
+    clear_request_access_token()
 
 
 # ── Internal helpers ──────────────────────────────────────────────────────────

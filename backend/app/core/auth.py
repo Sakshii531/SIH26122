@@ -43,7 +43,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 from app.core.config import Settings, get_settings
-from app.db.supabase_client import get_service_role_client
+from app.db.supabase_client import get_service_role_client, set_request_access_token
 
 # ── Security scheme ───────────────────────────────────────────────────────────
 
@@ -133,6 +133,7 @@ async def get_current_user(
     if settings.DB_PROVIDER == "supabase":
         role, mapped_email = _lookup_application_user(user_id)
         email = mapped_email or email
+        set_request_access_token(token)
     else:
         role = _role_from_test_claims(payload)
 

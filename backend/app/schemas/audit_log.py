@@ -50,6 +50,7 @@ class AuditLogCreate(AuditLogBase):
 class AuditLogResponse(AuditLogBase):
     """Schema for Audit Log responses."""
 
+    project_id: Optional[UUID] = Field(None, description="Project UUID when supplied by the source system")
     id: UUID = Field(default_factory=uuid4, description="Unique audit log UUID")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Log timestamp")
 

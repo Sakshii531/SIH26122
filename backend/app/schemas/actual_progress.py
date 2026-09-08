@@ -65,6 +65,7 @@ class ActualProgressCreate(ActualProgressBase):
 class ActualProgressResponse(ActualProgressBase):
     """Schema for actual progress responses."""
 
+    project_id: Optional[UUID] = Field(None, description="Project UUID when supplied by the source system")
     id: UUID = Field(default_factory=uuid4, description="Unique actual progress UUID")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Record timestamp")
     created_at: datetime = Field(default_factory=datetime.utcnow)

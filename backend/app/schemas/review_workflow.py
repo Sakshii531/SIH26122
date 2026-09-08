@@ -40,10 +40,10 @@ class ReviewItemResponse(BaseModel):
     """Full detail response model for a human review item."""
 
     id: UUID = Field(default_factory=uuid4, description="Unique review item UUID")
-    report_id: UUID = Field(..., description="Target field report UUID")
+    report_id: Optional[UUID] = Field(None, description="Target field report UUID when supplied by the database row")
     schedule_activity_id: Optional[UUID] = Field(None, description="Associated schedule activity UUID")
     matched_activity_code: Optional[str] = Field(None, description="Associated activity code")
-    confidence_score: float = Field(..., ge=0.0, le=1.0, description="AI confidence score")
+    confidence_score: float = Field(0.0, ge=0.0, le=1.0, description="AI confidence score when supplied")
     status: ReviewStatus = Field(default=ReviewStatus.PENDING, description="Review item status (PENDING, APPROVED, REJECTED, MODIFIED)")
 
     decision: Optional[ReviewDecision] = Field(None, description="Submitted reviewer decision")

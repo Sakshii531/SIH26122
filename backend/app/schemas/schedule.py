@@ -37,6 +37,7 @@ class ScheduleUpdate(BaseModel):
 class ScheduleResponse(ScheduleBase):
     """Schema for Schedule responses."""
 
+    version: Optional[str] = Field(None, description="Optional schedule version when supplied by the source system")
     id: UUID = Field(default_factory=uuid4, description="Unique schedule UUID")
     wbs_nodes: Optional[List[dict]] = Field(None, description="Associated WBS nodes")
     created_at: datetime = Field(default_factory=datetime.utcnow)
