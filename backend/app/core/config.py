@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import List
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -44,6 +45,15 @@ class Settings(BaseSettings):
         case_sensitive=True,
         extra="ignore",
     )
+
+    @model_validator(mode="after")
+    def validate_security_settings(self) -> "Settings":
+        self.DB_PROVIDER = self.DB_PROVIDER.strip().lower()
+        if self.DB_PROVIDER not in {"in_memory", "supabase"}:
+            raise ValueError("DB_PROVIDER must be either 'in_memory' or 'supabase'")
+        if "*" in self.CORS_ORIGINS:
+            raise ValueError("Wildcard CORS origins are not permitted")
+        return self
 
 
 @lru_cache

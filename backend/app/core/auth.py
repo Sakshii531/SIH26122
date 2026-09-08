@@ -106,7 +106,7 @@ async def get_current_user(
             if not settings.JWT_SECRET:
                 raise HTTPException(
                     status_code=500,
-                    detail="JWT_SECRET is required for in_memory authentication",
+                    detail="Authentication is not configured",
                 )
             payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
     except HTTPException:
@@ -118,11 +118,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     except jwt.InvalidTokenError as exc:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Invalid token: {exc}",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise HTTPException(status_code=401, detail="Invalid authentication token", headers={"WWW-Authenticate": "Bearer"})
 
     user_id: Optional[str] = payload.get("sub")
     if not user_id:
@@ -147,7 +143,7 @@ def _jwks_client(jwks_url: str) -> jwt.PyJWKClient:
 
 def _decode_supabase_token(token: str, settings: Settings) -> dict:
     if not settings.SUPABASE_URL:
-        raise HTTPException(status_code=500, detail="SUPABASE_URL is not configured on server")
+        raise HTTPException(status_code=503, detail="Authentication service is unavailable")
 
     jwks_url = f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1/.well-known/jwks.json"
     issuer = f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1"
@@ -163,9 +159,9 @@ def _decode_supabase_token(token: str, settings: Settings) -> dict:
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired", headers={"WWW-Authenticate": "Bearer"})
     except jwt.InvalidTokenError as exc:
-        raise HTTPException(status_code=401, detail=f"Invalid Supabase token: {exc}", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=401, detail="Invalid authentication token", headers={"WWW-Authenticate": "Bearer"})
     except Exception as exc:
-        raise HTTPException(status_code=401, detail=f"Unable to verify Supabase token: {exc}", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=503, detail="Authentication service is unavailable")
 
 
 def _lookup_application_user(auth_user_id: str) -> tuple[str, Optional[str]]:
@@ -179,7 +175,7 @@ def _lookup_application_user(auth_user_id: str) -> tuple[str, Optional[str]]:
             .execute()
         )
     except Exception as exc:
-        raise HTTPException(status_code=503, detail=f"Unable to resolve authenticated user: {exc}")
+        raise HTTPException(status_code=503, detail="Unable to resolve authenticated user")
 
     if not response.data:
         raise HTTPException(status_code=403, detail="Authenticated user is not provisioned in public.users")

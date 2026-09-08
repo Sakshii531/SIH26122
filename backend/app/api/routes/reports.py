@@ -6,6 +6,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from app.core.auth import AuthUser, require_supervisor
+from app.core.config import get_settings
+from app.core.uploads import read_upload_with_limit
 from app.schemas.ai_contract import (
     ActivityMatchingRequest,
     ActivityMatchingResponse,
@@ -40,7 +42,8 @@ async def upload_field_report(
     _user: AuthUser = Depends(require_supervisor),
 ) -> FieldReportResponse:
     """Upload a file or audio recording as a field progress report. Requires SUPERVISOR, PLANNER, or ADMIN."""
-    content = await file.read()
+    max_bytes = get_settings().MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    content = await read_upload_with_limit(file, max_bytes)
     filename = file.filename or "uploaded_report.bin"
     return FieldReportService.process_file_report(
         file_bytes=content,

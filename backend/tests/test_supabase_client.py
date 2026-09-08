@@ -263,8 +263,8 @@ class TestSettingsIntegration:
         assert s.SUPABASE_SERVICE_ROLE_KEY is None
 
     def test_db_provider_default_is_in_memory(self):
-        """DB_PROVIDER must default to in_memory — storage must not switch."""
+        """The code default remains in_memory when no env file is loaded."""
         from app.core.config import Settings
 
-        s = Settings()
+        s = Settings(_env_file=None)
         assert s.DB_PROVIDER == "in_memory"

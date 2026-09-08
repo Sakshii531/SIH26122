@@ -6,6 +6,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from app.core.auth import AuthUser, require_planner
+from app.core.config import get_settings
+from app.core.uploads import read_upload_with_limit
 from app.schemas.schedule_import import ScheduleImportSummaryResponse
 from app.services.schedule_ingestion_service import ScheduleIngestionService
 
@@ -19,7 +21,8 @@ async def import_schedule(
     _user: AuthUser = Depends(require_planner),
 ) -> ScheduleImportSummaryResponse:
     """Import and validate schedule activities from an uploaded file. Requires PLANNER or ADMIN."""
-    content = await file.read()
+    max_bytes = get_settings().MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    content = await read_upload_with_limit(file, max_bytes)
     filename = file.filename or "uploaded_schedule.csv"
     return ScheduleIngestionService.parse_and_validate_schedule(
         file_bytes=content,

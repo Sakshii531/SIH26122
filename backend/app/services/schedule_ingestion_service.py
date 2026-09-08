@@ -173,10 +173,10 @@ class ScheduleIngestionService:
                 for row in ws.iter_rows(values_only=True):
                     rows.append(list(row))
                 return rows
-            except Exception as err:
+            except Exception:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Failed to parse Excel file: {str(err)}",
+                    detail="Failed to parse Excel file.",
                 )
 
         return []

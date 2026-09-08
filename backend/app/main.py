@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
+from app.db.supabase_client import clear_request_access_token
 
 settings = get_settings()
 
@@ -23,9 +24,18 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
+
+
+@app.middleware("http")
+async def clear_request_auth_context(request, call_next):
+    """Prevent an authenticated request token from surviving request scope."""
+    try:
+        return await call_next(request)
+    finally:
+        clear_request_access_token()
 
 # ── Root health check (no prefix) ─────────────────────────────────────────────
 
