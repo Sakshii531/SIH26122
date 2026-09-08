@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 
+from app.core.auth import AuthUser, get_current_user
 from app.schemas.dashboard import (
     ActivityReportResponse,
     DashboardSummaryResponse,
@@ -22,9 +23,9 @@ router = APIRouter(prefix="/dashboard", tags=["dashboard"])
     response_model=DashboardSummaryResponse,
     summary="Global execution metrics",
 )
-def get_summary() -> DashboardSummaryResponse:
+def get_summary(user: AuthUser = Depends(get_current_user)) -> DashboardSummaryResponse:
     """
-    Return aggregated project-wide execution metrics:
+    Return aggregated project-wide execution metrics. Requires authentication.
 
     - Activity counts (total / completed / in-progress / delayed)
     - Review queue counts (pending / approved / rejected / modified)
@@ -39,9 +40,12 @@ def get_summary() -> DashboardSummaryResponse:
     response_model=ProjectExecutionSummary,
     summary="Per-project execution summary",
 )
-def get_project_summary(project_id: UUID) -> ProjectExecutionSummary:
+def get_project_summary(
+    project_id: UUID,
+    user: AuthUser = Depends(get_current_user),
+) -> ProjectExecutionSummary:
     """
-    Return execution KPIs scoped to a single project, including:
+    Return execution KPIs scoped to a single project. Requires authentication.
 
     - Number of progress events
     - Average completion percentage
@@ -66,9 +70,10 @@ def get_activities(
     discipline: Optional[str] = Query(
         None, description="Filter by engineering discipline (case-insensitive)"
     ),
+    user: AuthUser = Depends(get_current_user),
 ) -> ActivityReportResponse:
     """
-    Return normalised per-activity progress data.
+    Return normalised per-activity progress data. Requires authentication.
 
     All query parameters are optional and combinable. Returns an empty list
     when no data matches — never raises 404.
@@ -88,10 +93,11 @@ def get_activities(
 )
 def get_recent_activity(
     limit: int = Query(20, ge=1, le=100, description="Maximum number of events to return (1–100)"),
+    user: AuthUser = Depends(get_current_user),
 ) -> RecentActivityResponse:
     """
     Return the most recent events merged from progress events, review decisions,
-    and audit entries — sorted newest-first.
+    and audit entries — sorted newest-first. Requires authentication.
 
     Frontend-friendly: each item carries `event_kind`, `description`,
     `actor_id`, `timestamp`, and a `metadata` bag for extra context.

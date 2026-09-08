@@ -93,4 +93,7 @@ class ReviewWorkflowService:
     def clear_db(cls) -> None:
         """Reset repository store for testing isolation."""
         repo = get_planner_review_repository()
-        repo.clear()
+        try:
+            repo.clear()
+        except NotImplementedError:
+            pass

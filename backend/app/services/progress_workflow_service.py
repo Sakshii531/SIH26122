@@ -146,4 +146,7 @@ class ProgressWorkflowService:
     def clear_db(cls) -> None:
         """Reset repository progress store for testing isolation."""
         repo = get_actual_progress_repository()
-        repo.clear()
+        try:
+            repo.clear()
+        except NotImplementedError:
+            pass

@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 
+from app.core.auth import AuthUser, require_supervisor
 from app.schemas.ai_contract import (
     ActivityMatchingRequest,
     ActivityMatchingResponse,
@@ -20,8 +21,11 @@ router = APIRouter(prefix="/reports", tags=["reports"])
 
 
 @router.post("", response_model=FieldReportResponse, status_code=201)
-async def create_text_report(payload: FieldReportCreate) -> FieldReportResponse:
-    """Submit a structured text or metadata field progress report."""
+async def create_text_report(
+    payload: FieldReportCreate,
+    _user: AuthUser = Depends(require_supervisor),
+) -> FieldReportResponse:
+    """Submit a structured text or metadata field progress report. Requires SUPERVISOR, PLANNER, or ADMIN."""
     return FieldReportService.process_text_report(payload)
 
 
@@ -33,8 +37,9 @@ async def upload_field_report(
     discipline: Optional[str] = Form(None, description="Optional engineering discipline"),
     location: Optional[str] = Form(None, description="Optional site location"),
     source_format: Optional[FieldReportFormat] = Form(None, description="Optional explicit source format"),
+    _user: AuthUser = Depends(require_supervisor),
 ) -> FieldReportResponse:
-    """Upload a file or audio recording as a field progress report."""
+    """Upload a file or audio recording as a field progress report. Requires SUPERVISOR, PLANNER, or ADMIN."""
     content = await file.read()
     filename = file.filename or "uploaded_report.bin"
     return FieldReportService.process_file_report(
@@ -53,8 +58,9 @@ async def upload_field_report(
 async def extract_report(
     report_id: UUID,
     payload: FieldReportExtractionRequest,
+    _user: AuthUser = Depends(require_supervisor),
 ) -> FieldReportExtractionResponse:
-    """AI contract endpoint to trigger information & progress extraction from a field report."""
+    """AI contract endpoint to trigger extraction from a field report. Requires SUPERVISOR, PLANNER, or ADMIN."""
     return AIIntegrationService.extract_report_data(report_id, payload)
 
 
@@ -62,6 +68,7 @@ async def extract_report(
 async def match_report_activity(
     report_id: UUID,
     payload: ActivityMatchingRequest,
+    _user: AuthUser = Depends(require_supervisor),
 ) -> ActivityMatchingResponse:
-    """AI contract endpoint to match extracted report information to L5/L6 schedule activities."""
+    """AI contract endpoint to match extracted report info to schedule activities. Requires SUPERVISOR, PLANNER, or ADMIN."""
     return AIIntegrationService.match_activity(report_id, payload)

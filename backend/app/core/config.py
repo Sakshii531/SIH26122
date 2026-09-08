@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: str | None = None
     DATABASE_URL: str | None = None
 
+    # ── JWT & Authentication (Supabase Auth) ─────────────────────────────────
+    JWT_SECRET: str | None = None
+    JWT_ALGORITHM: str = "ES256"
+    AUTH_ENABLED: bool = True
+
     # ── CORS ──────────────────────────────────────────────────────────────────
     # Comma-separated list of allowed origins, e.g. "http://localhost:3000,https://example.com"
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]

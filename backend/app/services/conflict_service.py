@@ -52,4 +52,7 @@ class ConflictService:
     def clear_db(cls) -> None:
         """Reset repository store for testing isolation."""
         repo = get_conflict_repository()
-        repo.clear()
+        try:
+            repo.clear()
+        except NotImplementedError:
+            pass
