@@ -116,10 +116,10 @@ export function GanttChart({ selectedActivity, onSelectActivity }) {
                   <div
                     className={`absolute h-3.5 rounded-full top-3 transition-all shadow-2xs ${
                       act.status === 'Completed'
-                        ? 'bg-emerald-600'
+                        ? 'bg-[#FA5A16]'
                         : act.status === 'Delayed'
                         ? 'bg-rose-600'
-                        : 'bg-blue-600'
+                        : 'bg-[#FA5A16]'
                     }`}
                     style={{
                       left: `${startDay * 32}px`,

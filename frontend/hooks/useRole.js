@@ -18,6 +18,7 @@ import { useState, useCallback, useEffect } from 'react';
 
 export const ROLES = {
   PLANNER: 'planner',
+  SUPERVISOR: 'supervisor',
   MANAGER: 'manager',
   WORKER: 'worker',
   ADMIN: 'admin',
@@ -25,6 +26,7 @@ export const ROLES = {
 
 export const ROLE_LABELS = {
   planner: 'Planner',
+  supervisor: 'Supervisor',
   manager: 'Planning Manager',
   worker: 'Site Engineer',
   admin: 'Admin',
@@ -36,6 +38,14 @@ export const ROLE_PERMISSIONS = {
     canViewSchedule: true,
     canCapture: true,
     canViewAnalytics: true,
+    canViewAudit: false,
+    canViewAdmin: false,
+  },
+  supervisor: {
+    canVerify: false,
+    canViewSchedule: false,
+    canCapture: true,
+    canViewAnalytics: false,
     canViewAudit: false,
     canViewAdmin: false,
   },
@@ -68,7 +78,7 @@ export const ROLE_PERMISSIONS = {
 const STORAGE_KEY = 'sih26122_active_role';
 
 export function useRole() {
-  const [role, setRoleState] = useState(ROLES.PLANNER);
+  const [role, setRoleState] = useState(ROLES.SUPERVISOR);
 
   // Hydrate from localStorage on mount (client only)
   useEffect(() => {

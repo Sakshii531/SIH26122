@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { SCurveChart } from '../../components/analytics/SCurveChart.jsx';
-import { DisciplineProgressChart } from '../../components/analytics/DisciplineProgressChart.jsx';
-import { DailyOutputChart } from '../../components/analytics/DailyOutputChart.jsx';
+import { SCurveChart } from '../../../components/analytics/SCurveChart.jsx';
+import { DisciplineProgressChart } from '../../../components/analytics/DisciplineProgressChart.jsx';
+import { DailyOutputChart } from '../../../components/analytics/DailyOutputChart.jsx';
 import { LineChart, AlertTriangle, TrendingUp, ShieldCheck } from 'lucide-react';
-import { MOCK_DELAY_HEATMAP } from '../../services/mock/mockAuditLogs.js';
-import { Card } from '../../components/common/Card.jsx';
-import { Badge } from '../../components/common/Badge.jsx';
+import { MOCK_DELAY_HEATMAP } from '../../../services/mock/mockAuditLogs.js';
+import { Card } from '../../../components/common/Card.jsx';
+import { Badge } from '../../../components/common/Badge.jsx';
 
 export default function AnalyticsPage() {
   return (

@@ -4,11 +4,11 @@
 export const MOCK_PROJECTS = [
   {
     id: 'PRJ-METRO-03',
-    name: 'Metro Elevated Viaduct & Stations (Package 4)',
-    code: 'MMRDA-ML3-P4',
+    name: 'Metro Rail Extension - Phase 2B',
+    code: 'MRE-P2B',
     client: 'Mumbai Metropolitan Region Development Authority',
     contractor: 'L&T Infrastructure - Shapoorji Pallonji JV',
-    location: 'Bandra-Kurla Complex to Seepz (14.2 km Viaduct)',
+    location: 'North Foundation Zone & Sector 4 Viaduct',
     startDate: '2025-01-15',
     targetCompletion: '2027-06-30',
     overallPlannedProgress: 68.4,
